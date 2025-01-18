@@ -97,43 +97,7 @@ templ User(user *model.User) {
 // }
 templ OnboardingStart() {
 	@layout.Index("IDNow") {
-		<div class="h-screen w-96 flex flex-col bg-[#130D1D] justify-center overflow-hidden pt-5 pb-80">
-			<div class="h-full flex flex-col gap-24 justify-between">
-				<div class="items-start gap-4 inline-flex">
-					<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
-					<h2 class="text-[#F0F5EE] text-5xl font-normal">Faceless</h2>
-				</div>
-				<div class="flex flex-col gap-10">
-					<div class="justify-start items-start gap-4 inline-flex">
-						<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
-						<div class="flex-col justify-start items-start gap-1 inline-flex">
-							<a href="/register" class="text-[#F0F5EE] text-2xl font-semibold cursor-pointer">
-								<div class="text-[#F0F5EE] text-2xl font-semibold">Sign up</div>
-								<div class="text-[#F0F5EE] text-sm font-normal">Create your account.</div>
-							</a>
-						</div>
-					</div>
-					<div class="self-stretch justify-start items-start gap-4 inline-flex">
-						<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
-						<div class="flex-col justify-start items-start gap-1 inline-flex">
-							<a href="/user/onboardingStart" class="text-[#F0F5EE] text-2xl font-semibold cursor-pointer">
-								<div class="text-[#F0F5EE] text-2xl font-semibold">IDnow Verification </div>
-								<div class="text-[#F0F5EE] text-sm font-normal">The last time you’ll need to verify through IDnow</div>
-							</a>
-						</div>
-					</div>
-					<div class="justify-start items-start gap-4 inline-flex">
-						<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
-						<div class="flex-col justify-start items-start gap-1 inline-flex">
-							<a href="/user/onboardingRecording" class="text-[#F0F5EE] text-2xl font-semibold cursor-pointer">
-								<div class="text-[#F0F5EE] text-2xl font-semibold">Voice Recordings</div>
-								<div class="text-[#F0F5EE] text-sm font-normal">Record 3 simple sentences to get verified</div>
-							</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+		@Sidebar()
 		<div class="grow shrink basis-0 self-stretch py-10 bg-[#F0F5EE] flex-col justify-center items-center gap-6 inline-flex">
 			<div class="flex-col justify-start items-center gap-4 flex">
 				<div class="py-2 flex-col justify-center items-center gap-1 flex">
@@ -164,6 +128,25 @@ templ OnboardingRecording(user *model.User, step int) {
 
 templ OnboardingSuccess() {
 	@layout.Index("Reference recording") {
+		@Sidebar()
+		<div class="grow shrink basis-0 self-stretch py-10 bg-[#F0F5EE] flex-col justify-center items-center gap-6 inline-flex">
+			<div class="flex-col justify-start items-center gap-4 flex">
+				<div class="py-2 flex-col justify-center items-center gap-1 flex">
+					<div class="justify-center items-center gap-2.5 inline-flex">
+						<div class="text-[#150D1D] text-2xl font-semibold leading-loose">Your're all set!</div>
+					</div>
+					<div class="text-zinc-500 text-sm font-normal leading-tight">Say goodgye to endless hours of waiting and awkward video calls. <br/>From now on, authentication will be faster and more comfortable.</div>
+				</div>
+				<div class="h-9 flex-col justify-center items-center gap-6 flex w-full place-self-center">
+					<div class=" h-9 flex-col justify-center items-center gap-2 flex w-56 place-self-center">
+						<a class="self-stretch h-9 px-4 py-2  rounded-md shadow-sm justify-center items-center gap-1 inline-flex button_primary cursor-pointer place-self-center" href="/user/onboardingRecording">
+							<div class="text-[#F9F9F9] font-bold">Go to</div>
+							// <img class="w-[21px] h-[21px] rounded-[3px] border border-black/20" src="https://via.placeholder.com/21x21"/>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
 		<script>
 			const jsConfetti = new JSConfetti()
 			jsConfetti.addConfetti({
@@ -179,13 +162,13 @@ templ OnboardingSuccess() {
 }
 
 templ Sidebar() {
-	<div class="h-screen w-96 flex flex-col bg-[#130D1D] justify-center overflow-hidden pt-5 pb-80">
-		<div class="h-full flex flex-col gap-24 justify-between">
+	<div class="h-screen w-96 flex flex-col bg-[#130D1D] justify-center overflow-hidden p-4 gap-24">
+		<div class="h-full flex flex-col gap-28 justify-center">
 			<div class="items-start gap-4 inline-flex">
 				<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
 				<h2 class="text-[#F0F5EE] text-5xl font-normal">Faceless</h2>
 			</div>
-			<div class="flex flex-col gap-10">
+			<div class="flex flex-col gap-6">
 				<div class="justify-start items-start gap-4 inline-flex">
 					<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
 					<div class="flex-col justify-start items-start gap-1 inline-flex">
@@ -248,9 +231,12 @@ templ RecordSentence(sentence string) {
 									add .bg-red-600 to next <button/>
 									add .hover:bg-red-500 to next <button/>
 									put 'Mic' into .material-icons in next <button/>
+									remove .text-white from next <button/>
+									remove @disabled from #recordButton
+									add .hidden to #sparkle
 									add .hidden to me"
 							>
-								<span class="material-icons black text-xxl">restart_alt</span>
+								<span class="material-icons white text-xxl">restart_alt</span>
 							</button>
 							<button
 								id="recordButton"
@@ -275,10 +261,11 @@ templ RecordSentence(sentence string) {
 										add .bg-green-600 to me
 										add @disabled to me
 										put 'check' into .material-icons in me
+										add .text-white to me
 										remove .hidden from #sparkle
 									end"
 							>
-								<span class="material-icons black text-xxl">mic</span>
+								<span class="material-icons text-xxl">mic</span>
 							</button>
 						</div>
 						<div class="flex flex-col items-center justify-center w-full">
@@ -303,6 +290,7 @@ templ RecordSentence(sentence string) {
 								add .bg-red-600 to #recordButton
 								add .hover:bg-red-500 to #recordButton
 								put 'Mic' into .material-icons in #recordButton
+								remove .text-white from #recordButton
 								add .hidden to #restartButton1
 								add @disabled to me
 								add .hidden to #sparkle

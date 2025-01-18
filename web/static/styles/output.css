@@ -3160,6 +3160,14 @@ input {
   gap: 1.5rem !important;
 }
 
+.gap-20 {
+  gap: 5rem !important;
+}
+
+.gap-28 {
+  gap: 7rem !important;
+}
+
 .gap-x-6 {
   -moz-column-gap: 1.5rem !important;
        column-gap: 1.5rem !important;
