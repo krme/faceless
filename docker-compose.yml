@@ -1,6 +1,14 @@
 version: '3.8'
 
 services:
+  jobs:
+    build:
+      context: ./jobs 
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/code
+
   psql:
     image: pgvector/pgvector:pg17
     environment:
