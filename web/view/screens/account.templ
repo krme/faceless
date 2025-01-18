@@ -40,6 +40,32 @@ templ Account(data *model.Auth) {
 }
 
 templ RecordSentence(sentence string) {
+	<script>
+		const mediaRecorder = new MediaRecorder(stream);
+
+		function startRecording() {
+			mediaRecorder.start();
+			console.log("recorder started", mediaRecorder.state);
+		}
+
+		function stopRecording() {
+			mediaRecorder.stop();
+			console.log("recorder stopped", mediaRecorder.state);
+			// TODO send the recorded data to the server
+		}
+
+		mediaRecorder.onstop = (e) => {
+			console.log("recorder stopped");
+
+			const blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
+			chunks = [];
+			// TODO keine Ahnung, ob das so notwendig ist
+			const audioURL = window.URL.createObjectURL(blob);
+			audio.src = audioURL;
+
+			// TODO send to recording to server
+		};
+	</script>
 	<div class="card">
 		<div class="w-full flex-row lg:flex lg:items-center lg:justify-between mb-8">
 			<div class="min-w-0 flex-1">
