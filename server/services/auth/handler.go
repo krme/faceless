@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/antonlindstrom/pgstore"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/siherrmann/validator"
 )
@@ -37,7 +36,7 @@ func NewAuthService(sessionStore *pgstore.PGStore) *AuthService {
 	var authDb AuthDBHandlerFunctions = newAuthDBHandler(dbConnection)
 
 	// creates main auth table
-	err := authDb.CreateTable(uuid.UUID{})
+	err := authDb.CreateTable()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -82,8 +81,6 @@ func (s *AuthService) logoutSession(c echo.Context) error {
 }
 
 func (h *AuthService) HandleRegisterWithEmail(c echo.Context) error {
-	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
-
 	request := &struct {
 		Email    string `upd:"email, min3 max256 con@"`
 		Password string `upd:"password, min8 max30 rex'^(.*[A-Z])+(.*)$' rex'^(.*[a-z])+(.*)$' rex'^(.*\\d)+(.*)$' rex'^(.*[\x60!@#$%^&*()_+={};/':\"|\\,.<>/?~-])+(.*)$'"`
@@ -98,7 +95,7 @@ func (h *AuthService) HandleRegisterWithEmail(c echo.Context) error {
 		PasswordHash: request.Password,
 	}
 
-	count, err := h.authDb.CountAuthByEmail(projectRid, auth.Email)
+	count, err := h.authDb.CountAuthByEmail(auth.Email)
 	if err != nil {
 		return fmt.Errorf("error counting auth: %v", err)
 	}
@@ -113,7 +110,7 @@ func (h *AuthService) HandleRegisterWithEmail(c echo.Context) error {
 
 	auth.EmailVerificationCodeHash = emailVerificationCodeHash
 
-	auth, err = h.authDb.InsertAuth(projectRid, auth)
+	auth, err = h.authDb.InsertAuth(auth)
 	if err != nil {
 		return fmt.Errorf("error inserting auth: %v", err)
 	}
@@ -130,10 +127,9 @@ func (h *AuthService) HandleRegisterWithEmail(c echo.Context) error {
 }
 
 func (h *AuthService) HandleRequestNewEmailVerificationCode(c echo.Context) error {
-	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
 	userId := helper.GetCurrentUserRID(c.Request().Context())
 
-	auth, err := h.authDb.SelectAuth(projectRid, userId)
+	auth, err := h.authDb.SelectAuth(userId)
 	if err != nil {
 		return fmt.Errorf("error selecting auth: %v", err)
 	}
@@ -148,7 +144,7 @@ func (h *AuthService) HandleRequestNewEmailVerificationCode(c echo.Context) erro
 
 	auth.EmailVerificationCodeHash = emailVerificationCodeHash
 
-	_, err = h.authDb.UpdateAuth(projectRid, auth)
+	_, err = h.authDb.UpdateAuth(auth)
 	if err != nil {
 		return fmt.Errorf("error updating auth: %v", err)
 	}
@@ -160,7 +156,6 @@ func (h *AuthService) HandleRequestNewEmailVerificationCode(c echo.Context) erro
 }
 
 func (h *AuthService) HandleVerifyEmail(c echo.Context) error {
-	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
 	userId := helper.GetCurrentUserRID(c.Request().Context())
 
 	request := &struct {
@@ -171,7 +166,7 @@ func (h *AuthService) HandleVerifyEmail(c echo.Context) error {
 		return err
 	}
 
-	auth, err := h.authDb.SelectAuth(projectRid, userId)
+	auth, err := h.authDb.SelectAuth(userId)
 	if err != nil {
 		return fmt.Errorf("error selecting auth: %v", err)
 	}
@@ -179,7 +174,7 @@ func (h *AuthService) HandleVerifyEmail(c echo.Context) error {
 		return fmt.Errorf("email already verified")
 	}
 
-	valid := h.authDb.CheckEmailVerificationCodeValid(projectRid, userId, request.VerificationCode)
+	valid := h.authDb.CheckEmailVerificationCodeValid(userId, request.VerificationCode)
 	if !valid {
 		return fmt.Errorf("invalid email verification code")
 	}
@@ -187,7 +182,7 @@ func (h *AuthService) HandleVerifyEmail(c echo.Context) error {
 	auth.EmailVerificationCodeHash = ""
 	auth.EmailVerified = true
 
-	auth, err = h.authDb.UpdateAuth(projectRid, auth)
+	auth, err = h.authDb.UpdateAuth(auth)
 	if err != nil {
 		return fmt.Errorf("error updating auth: %v", err)
 	}
@@ -203,7 +198,6 @@ func (h *AuthService) HandleVerifyEmail(c echo.Context) error {
 }
 
 func (h *AuthService) HandleLoginWithEmail(c echo.Context) error {
-	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
 
 	request := &struct {
 		Email    string `upd:"email, min3 max256 con@"`
@@ -214,7 +208,7 @@ func (h *AuthService) HandleLoginWithEmail(c echo.Context) error {
 		return err
 	}
 
-	auth, err := h.authDb.SelectAuthByEmailAndPassword(projectRid, request.Email, request.Password)
+	auth, err := h.authDb.SelectAuthByEmailAndPassword(request.Email, request.Password)
 	if err != nil {
 		return fmt.Errorf("invalid email or password")
 	}
@@ -228,7 +222,6 @@ func (h *AuthService) HandleLoginWithEmail(c echo.Context) error {
 }
 
 func (h *AuthService) HandleRequestPasswordReset(c echo.Context) error {
-	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
 
 	request := &struct {
 		Email string `upd:"email, min3 max256 con@"`
@@ -238,7 +231,7 @@ func (h *AuthService) HandleRequestPasswordReset(c echo.Context) error {
 		return err
 	}
 
-	auth, err := h.authDb.SelectAuthByEmail(projectRid, request.Email)
+	auth, err := h.authDb.SelectAuthByEmail(request.Email)
 	if err != nil {
 		return fmt.Errorf("error selecting auth: %v", err)
 	}
@@ -249,7 +242,7 @@ func (h *AuthService) HandleRequestPasswordReset(c echo.Context) error {
 		return fmt.Errorf("error creating password reset code: %v", err)
 	}
 
-	auth, err = h.authDb.UpdateAuth(projectRid, auth)
+	auth, err = h.authDb.UpdateAuth(auth)
 	if err != nil {
 		return fmt.Errorf("error updating auth: %v", err)
 	}
@@ -266,7 +259,6 @@ func (h *AuthService) HandleRequestPasswordReset(c echo.Context) error {
 }
 
 func (h *AuthService) HandleResetPassword(c echo.Context) error {
-	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
 	userId := helper.GetCurrentUserRID(c.Request().Context())
 
 	request := &struct {
@@ -283,12 +275,12 @@ func (h *AuthService) HandleResetPassword(c echo.Context) error {
 		return fmt.Errorf("passwords do not match")
 	}
 
-	auth, err := h.authDb.SelectAuth(projectRid, userId)
+	auth, err := h.authDb.SelectAuth(userId)
 	if err != nil {
 		return fmt.Errorf("error selecting auth: %v", err)
 	}
 
-	valid := h.authDb.CheckPasswordResetCodeValid(projectRid, auth.RID, request.VerificationCode)
+	valid := h.authDb.CheckPasswordResetCodeValid(auth.RID, request.VerificationCode)
 	if !valid {
 		return fmt.Errorf("invalid password reset code")
 	}
@@ -305,7 +297,7 @@ func (h *AuthService) HandleResetPassword(c echo.Context) error {
 		// TODO all things to do after finshed registration
 	}
 
-	_, err = h.authDb.UpdateAuth(projectRid, auth)
+	_, err = h.authDb.UpdateAuth(auth)
 	if err != nil {
 		return fmt.Errorf("error updating auth: %v", err)
 	}
@@ -326,10 +318,9 @@ func (h *AuthService) HandleDeleteAuth(c echo.Context) error {
 	// TODO check access
 	h.logger.Println("deleting auth definition")
 
-	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
 	userRid := helper.GetCurrentUserRID(c.Request().Context())
 
-	err := h.authDb.DeleteAuth(projectRid, userRid)
+	err := h.authDb.DeleteAuth(userRid)
 	if err != nil {
 		return err
 	}
@@ -341,10 +332,9 @@ func (h *AuthService) HandleGetAuth(c echo.Context) (*model.Auth, error) {
 	// TODO check access
 	h.logger.Println("getting auth definition")
 
-	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
 	userRid := helper.GetCurrentUserRID(c.Request().Context())
 
-	auth, err := h.authDb.SelectAuth(projectRid, userRid)
+	auth, err := h.authDb.SelectAuth(userRid)
 	if err != nil {
 		return nil, err
 	}

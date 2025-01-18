@@ -5,6 +5,7 @@ import (
 	"ht/helper"
 	"ht/server/database"
 	"ht/server/services/auth"
+	"ht/server/services/user"
 	"net/http"
 
 	"github.com/antonlindstrom/pgstore"
@@ -18,6 +19,7 @@ type Server struct {
 	sessionDb    *database.DatabaseConfiguration
 	// services
 	AuthService *auth.AuthService
+	UserService *user.UserService
 }
 
 func NewServer() (*Server, error) {
@@ -45,5 +47,6 @@ func NewServer() (*Server, error) {
 		sessionDb:    sessionDb,
 		// services
 		AuthService: auth.NewAuthService(sessionStore),
+		UserService: user.NewUserService(),
 	}, nil
 }

@@ -3,32 +3,28 @@ package auth
 import (
 	"context"
 	"fmt"
-	"ht/helper"
 	"ht/model"
 	"ht/server/database"
 	"log"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/lib/pq"
 )
 
-const mainTableName = "auth_main"
-
 type AuthDBHandlerFunctions interface {
-	CreateTable(projectRid uuid.UUID) error
-	DropTable(projectRid uuid.UUID) error
-	CountAuthByEmail(projectRid uuid.UUID, email string) (int, error)
-	CheckEmailVerificationCodeValid(projectRid uuid.UUID, rid uuid.UUID, code string) bool
-	CheckPasswordResetCodeValid(projectRid uuid.UUID, rid uuid.UUID, code string) bool
-	InsertAuth(projectRid uuid.UUID, auth *model.Auth) (*model.Auth, error)
-	UpdateAuth(projectRid uuid.UUID, auth *model.Auth) (*model.Auth, error)
-	DeleteAuth(projectRid uuid.UUID, rid uuid.UUID) error
-	SelectAuth(projectRid uuid.UUID, rid uuid.UUID) (*model.Auth, error)
-	SelectAuthByEmail(projectRid uuid.UUID, email string) (*model.Auth, error)
-	SelectAuthByEmailAndPassword(projectRid uuid.UUID, email string, password string) (*model.Auth, error)
-	SelectAllAuth(projectRid uuid.UUID, lastId int, entries int) ([]*model.Auth, error)
-	SelectAllAuthBySearch(projectRid uuid.UUID, search string, lastId int, entries int) ([]*model.Auth, error)
+	CreateTable() error
+	DropTable() error
+	CountAuthByEmail(email string) (int, error)
+	CheckEmailVerificationCodeValid(rid uuid.UUID, code string) bool
+	CheckPasswordResetCodeValid(rid uuid.UUID, code string) bool
+	InsertAuth(auth *model.Auth) (*model.Auth, error)
+	UpdateAuth(auth *model.Auth) (*model.Auth, error)
+	DeleteAuth(rid uuid.UUID) error
+	SelectAuth(rid uuid.UUID) (*model.Auth, error)
+	SelectAuthByEmail(email string) (*model.Auth, error)
+	SelectAuthByEmailAndPassword(email string, password string) (*model.Auth, error)
+	SelectAllAuth(lastId int, entries int) ([]*model.Auth, error)
+	SelectAllAuthBySearch(search string, lastId int, entries int) ([]*model.Auth, error)
 }
 
 type AuthDBHandler struct {
@@ -41,25 +37,15 @@ func newAuthDBHandler(dbConnection *database.Database) *AuthDBHandler {
 	}
 }
 
-func (r AuthDBHandler) tableNameByProjectRid(projectRid uuid.UUID) string {
-	tableName := mainTableName
-	if !helper.RIDIsEmpty(projectRid) {
-		tableName = "auth_" + projectRid.String()
-	}
-	log.Println("using table name: ", mainTableName)
-	return tableName
-}
-
-func (r AuthDBHandler) CreateTable(projectRid uuid.UUID) error {
+func (r AuthDBHandler) CreateTable() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	tableName := r.tableNameByProjectRid(projectRid)
-	tableNameQuoted := pq.QuoteIdentifier(r.tableNameByProjectRid(projectRid))
 	_, err := r.db.Instance.ExecContext(
 		ctx,
 		`CREATE EXTENSION IF NOT EXISTS pgcrypto;
-		CREATE TABLE IF NOT EXISTS `+tableNameQuoted+` (
+
+		CREATE TABLE IF NOT EXISTS auth (
 			id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 			rid UUID UNIQUE DEFAULT gen_random_uuid(),
 			email VARCHAR(254) NOT NULL,
@@ -77,47 +63,40 @@ func (r AuthDBHandler) CreateTable(projectRid uuid.UUID) error {
 		)`,
 	)
 	if err != nil {
-		return fmt.Errorf("error creating %s table: %#v", tableName, err)
+		return fmt.Errorf("error creating auth table: %#v", err)
 	}
 
-	err = r.db.CreateIndex(tableName, "rid")
+	err = r.db.CreateIndex("auth", "rid")
 	if err != nil {
 		return err
 	}
 
-	r.db.Logger.Printf("created table %s", tableName)
+	r.db.Logger.Println("created table auth")
 	return nil
 }
 
-func (r AuthDBHandler) DropTable(projectRid uuid.UUID) error {
+func (r AuthDBHandler) DropTable() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	tableName := r.tableNameByProjectRid(projectRid)
-	if tableName == mainTableName {
-		return fmt.Errorf("don't try to drop the main auth table again, ever")
-	}
-
-	tableNameQuoted := pq.QuoteIdentifier(tableName)
-	query := `DROP TABLE IF EXISTS ` + tableNameQuoted
+	query := `DROP TABLE IF EXISTS auth`
 	_, err := r.db.Instance.ExecContext(ctx, query)
 	if err != nil {
-		return fmt.Errorf("error dropping %s table: %#v", tableName, err)
+		return fmt.Errorf("error dropping auth table: %#v", err)
 	}
 
-	r.db.Logger.Printf("dropped table %s", tableName)
+	r.db.Logger.Println("dropped table auth")
 	return nil
 }
 
-func (r AuthDBHandler) CountAuthByEmail(projectRid uuid.UUID, email string) (int, error) {
+func (r AuthDBHandler) CountAuthByEmail(email string) (int, error) {
 	count := 0
 
-	tableNameQuoted := pq.QuoteIdentifier(r.tableNameByProjectRid(projectRid))
 	err := r.db.Instance.QueryRow(
 		`SELECT
 			COUNT(*)
 		FROM
-			`+tableNameQuoted+`
+			auth
 		WHERE
 			email = $1`,
 		email,
@@ -126,12 +105,11 @@ func (r AuthDBHandler) CountAuthByEmail(projectRid uuid.UUID, email string) (int
 	return count, err
 }
 
-func (r AuthDBHandler) CheckEmailVerificationCodeValid(projectRid uuid.UUID, rid uuid.UUID, code string) bool {
+func (r AuthDBHandler) CheckEmailVerificationCodeValid(rid uuid.UUID, code string) bool {
 	exists := false
 
-	tableNameQuoted := pq.QuoteIdentifier(r.tableNameByProjectRid(projectRid))
 	err := r.db.Instance.QueryRow(
-		`SELECT EXISTS (SELECT 1 FROM `+tableNameQuoted+` WHERE rid = $1 AND email_verification_code_hash = crypt($2, email_verification_code_hash));`,
+		`SELECT EXISTS (SELECT 1 FROM auth WHERE rid = $1 AND email_verification_code_hash = crypt($2, email_verification_code_hash));`,
 		rid,
 		code,
 	).Scan(&exists)
@@ -143,12 +121,11 @@ func (r AuthDBHandler) CheckEmailVerificationCodeValid(projectRid uuid.UUID, rid
 	return exists
 }
 
-func (r AuthDBHandler) CheckPasswordResetCodeValid(projectRid uuid.UUID, rid uuid.UUID, code string) bool {
+func (r AuthDBHandler) CheckPasswordResetCodeValid(rid uuid.UUID, code string) bool {
 	exists := false
 
-	tableNameQuoted := pq.QuoteIdentifier(r.tableNameByProjectRid(projectRid))
 	err := r.db.Instance.QueryRow(
-		`SELECT EXISTS (SELECT 1 FROM `+tableNameQuoted+` WHERE rid = $1 AND password_reset_code_hash = crypt($2, password_reset_code_hash));`,
+		`SELECT EXISTS (SELECT 1 FROM auth WHERE rid = $1 AND password_reset_code_hash = crypt($2, password_reset_code_hash));`,
 		rid,
 		code,
 	).Scan(&exists)
@@ -159,11 +136,9 @@ func (r AuthDBHandler) CheckPasswordResetCodeValid(projectRid uuid.UUID, rid uui
 	return exists
 }
 
-func (r AuthDBHandler) InsertAuth(projectRid uuid.UUID, auth *model.Auth) (*model.Auth, error) {
-	tableNameQuoted := pq.QuoteIdentifier(r.tableNameByProjectRid(projectRid))
-	log.Println(tableNameQuoted, auth.Email, auth.PasswordHash)
+func (r AuthDBHandler) InsertAuth(auth *model.Auth) (*model.Auth, error) {
 	row := r.db.Instance.QueryRow(
-		`INSERT INTO `+tableNameQuoted+` (email,
+		`INSERT INTO auth (email,
 			password_temp,
 			password_temp_request_date,
 			password_hash,
@@ -218,11 +193,10 @@ func (r AuthDBHandler) InsertAuth(projectRid uuid.UUID, auth *model.Auth) (*mode
 	return auth, nil
 }
 
-func (r AuthDBHandler) UpdateAuth(projectRid uuid.UUID, auth *model.Auth) (*model.Auth, error) {
-	tableNameQuoted := pq.QuoteIdentifier(r.tableNameByProjectRid(projectRid))
+func (r AuthDBHandler) UpdateAuth(auth *model.Auth) (*model.Auth, error) {
 	row := r.db.Instance.QueryRow(
 		`UPDATE
-			`+tableNameQuoted+`
+			auth
 		SET
 			email = lower($1),
 			password_temp = $2,
@@ -289,14 +263,10 @@ func (r AuthDBHandler) UpdateAuth(projectRid uuid.UUID, auth *model.Auth) (*mode
 	return auth, nil
 }
 
-func (r AuthDBHandler) DeleteAuth(projectRid uuid.UUID, rid uuid.UUID) error {
-	tableNameQuoted := pq.QuoteIdentifier(r.tableNameByProjectRid(projectRid))
+func (r AuthDBHandler) DeleteAuth(rid uuid.UUID) error {
 	_, err := r.db.Instance.Exec(
-		fmt.Sprintf(`
-			DELETE FROM %s
-			WHERE rid = $1`,
-			tableNameQuoted,
-		),
+		`DELETE FROM auth
+		WHERE rid = $1`,
 		rid,
 	)
 	if err != nil {
@@ -306,10 +276,9 @@ func (r AuthDBHandler) DeleteAuth(projectRid uuid.UUID, rid uuid.UUID) error {
 	return nil
 }
 
-func (r AuthDBHandler) SelectAuth(projectRid uuid.UUID, rid uuid.UUID) (*model.Auth, error) {
+func (r AuthDBHandler) SelectAuth(rid uuid.UUID) (*model.Auth, error) {
 	auth := &model.Auth{}
 
-	tableNameQuoted := pq.QuoteIdentifier(r.tableNameByProjectRid(projectRid))
 	row := r.db.Instance.QueryRow(
 		`SELECT
 			id,
@@ -327,7 +296,7 @@ func (r AuthDBHandler) SelectAuth(projectRid uuid.UUID, rid uuid.UUID) (*model.A
 			created_at,
 			updated_at
 		FROM
-			`+tableNameQuoted+`
+			auth
 		WHERE
 			rid = $1`,
 		rid,
@@ -355,10 +324,9 @@ func (r AuthDBHandler) SelectAuth(projectRid uuid.UUID, rid uuid.UUID) (*model.A
 	return auth, nil
 }
 
-func (r AuthDBHandler) SelectAuthByEmail(projectRid uuid.UUID, email string) (*model.Auth, error) {
+func (r AuthDBHandler) SelectAuthByEmail(email string) (*model.Auth, error) {
 	auth := &model.Auth{}
 
-	tableNameQuoted := pq.QuoteIdentifier(r.tableNameByProjectRid(projectRid))
 	row := r.db.Instance.QueryRow(
 		`SELECT
 			id,
@@ -376,7 +344,7 @@ func (r AuthDBHandler) SelectAuthByEmail(projectRid uuid.UUID, email string) (*m
 			created_at,
 			updated_at
 		FROM
-			`+tableNameQuoted+`
+			auth
 		WHERE
 			email = lower($1)`,
 		email,
@@ -404,10 +372,9 @@ func (r AuthDBHandler) SelectAuthByEmail(projectRid uuid.UUID, email string) (*m
 	return auth, nil
 }
 
-func (r AuthDBHandler) SelectAuthByEmailAndPassword(projectRid uuid.UUID, email string, password string) (*model.Auth, error) {
+func (r AuthDBHandler) SelectAuthByEmailAndPassword(email string, password string) (*model.Auth, error) {
 	auth := &model.Auth{}
 
-	tableNameQuoted := pq.QuoteIdentifier(r.tableNameByProjectRid(projectRid))
 	row := r.db.Instance.QueryRow(
 		`SELECT
 			id,
@@ -425,7 +392,7 @@ func (r AuthDBHandler) SelectAuthByEmailAndPassword(projectRid uuid.UUID, email 
 			created_at,
 			updated_at
 		FROM
-			`+tableNameQuoted+`
+			auth
 		WHERE
 			email = lower($1)
 		AND (password_hash = crypt($2, password_hash)
@@ -457,11 +424,9 @@ func (r AuthDBHandler) SelectAuthByEmailAndPassword(projectRid uuid.UUID, email 
 	return auth, nil
 }
 
-func (r AuthDBHandler) SelectAllAuth(projectRid uuid.UUID, lastId int, entries int) ([]*model.Auth, error) {
+func (r AuthDBHandler) SelectAllAuth(lastId int, entries int) ([]*model.Auth, error) {
 	var auths []*model.Auth
 
-	tableNameQuoted := pq.QuoteIdentifier(r.tableNameByProjectRid(projectRid))
-	log.Printf("table name: %v", tableNameQuoted)
 	rows, err := r.db.Instance.Query(`
 		SELECT
 			id,
@@ -479,13 +444,13 @@ func (r AuthDBHandler) SelectAllAuth(projectRid uuid.UUID, lastId int, entries i
 			created_at,
 			updated_at
 		FROM
-			`+tableNameQuoted+`
+			auth
 		WHERE (0 = $1
 			OR created_at < (
 				SELECT
 					created_at
 				FROM
-					`+tableNameQuoted+`
+					auth
 				WHERE
 					id = $1))
 		ORDER BY
@@ -528,13 +493,11 @@ func (r AuthDBHandler) SelectAllAuth(projectRid uuid.UUID, lastId int, entries i
 	return auths, nil
 }
 
-func (r AuthDBHandler) SelectAllAuthBySearch(projectRid uuid.UUID, search string, lastId int, entries int) ([]*model.Auth, error) {
+func (r AuthDBHandler) SelectAllAuthBySearch(search string, lastId int, entries int) ([]*model.Auth, error) {
 	var auths []*model.Auth
 
 	log.Printf("search: %v", search)
 
-	tableName := r.tableNameByProjectRid(projectRid)
-	tableNameQuoted := pq.QuoteIdentifier(tableName)
 	rows, err := r.db.Instance.Query(`
 		SELECT
 			id,
@@ -551,7 +514,7 @@ func (r AuthDBHandler) SelectAllAuthBySearch(projectRid uuid.UUID, search string
 			email_to_change_to,
 			created_at,
 			updated_at
-		FROM `+tableNameQuoted+`
+		FROM auth
 		WHERE (rid ILIKE '%' || $1 || '%'
 				OR email ILIKE '%' || lower($1) || '%')
 			AND (0 = $2
@@ -565,7 +528,6 @@ func (r AuthDBHandler) SelectAllAuthBySearch(projectRid uuid.UUID, search string
 		ORDER BY
 			created_at DESC
 		LIMIT $3`,
-		tableName,
 		search,
 		lastId,
 		entries,

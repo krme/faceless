@@ -5,8 +5,6 @@ import (
 	"ht/server/database"
 	"log"
 	"os"
-
-	"github.com/antonlindstrom/pgstore"
 )
 
 type UserService struct {
@@ -14,7 +12,7 @@ type UserService struct {
 	userDb UserDBHandlerFunctions
 }
 
-func NewUserService(sessionStore *pgstore.PGStore) *UserService {
+func NewUserService() *UserService {
 	logger := log.New(os.Stdout, "user: ", log.LstdFlags)
 	dbConnection := database.NewDatabase(
 		"user",
