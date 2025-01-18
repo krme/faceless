@@ -82,17 +82,25 @@ func (r UserDBHandler) InsertUser(user *model.User) (*model.User, error) {
 	newData := &model.User{}
 
 	row := r.db.Instance.QueryRow(
-		`INSERT INTO user ( rid )
-			VALUES ($1)
+		`INSERT INTO user ( id, rid, recording_1, recording_2, recording_3, recording_1_normalised, recording_2_normalised, recording_3_normalised, recording_1_mfcc, recording_2_mfcc, recording_3_mfcc )
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 		RETURNING
-			id, rid, created_at, updated_at`,
+			id, rid , created_at, updated_at`,
 		user.RID,
 	)
 
 	err := row.Scan(
 		&newData.ID,
 		&newData.RID,
-		// TODO add User columns
+		&newData.Recording1,
+		&newData.Recording2,
+		&newData.Recording3,
+		&newData.Recording1Normalised,
+		&newData.Recording2Normalised,
+		&newData.Recording3Normalised,
+		&newData.Recording1Mfcc,
+		&newData.Recording2Mfcc,
+		&newData.Recording3Mfcc,
 		&newData.CreatedAt,
 		&newData.UpdatedAt,
 	)
@@ -111,12 +119,24 @@ func (r UserDBHandler) UpdateUser(user *model.User) error {
             recording_1 = $1,
             recording_2 = $2,
             recording_3 = $3,
+			recording_1_normalised = $4,
+			recording_2_normalised = $5,
+			recording_3_normalised = $6,
+			recording_1_mfcc = $7,
+			recording_2_mfcc = $8,
+			recording_3_mfcc = $9,
             updated_at = CURRENT_TIMESTAMP
         WHERE
-            rid = $4`,
+            rid = $10`,
 		user.Recording1,
 		user.Recording2,
 		user.Recording3,
+		user.Recording1Normalised,
+		user.Recording2Normalised,
+		user.Recording3Normalised,
+		user.Recording1Mfcc,
+		user.Recording2Mfcc,
+		user.Recording3Mfcc,
 		user.RID,
 	)
 
@@ -143,7 +163,15 @@ func (r UserDBHandler) SelectData(projectRid uuid.UUID, datamodelRid uuid.UUID, 
 		`SELECT
 			id,
 			rid,
-			// TODO add columns
+			recording_1,
+			recording_2,
+			recording_3,
+			recording_1_normalised,
+			recording_2_normalised,
+			recording_3_normalised,
+			recording_1_mfcc,
+			recording_2_mfcc,
+			recording_3_mfcc,
 			created_at,
 			updated_at
 		FROM
@@ -155,7 +183,15 @@ func (r UserDBHandler) SelectData(projectRid uuid.UUID, datamodelRid uuid.UUID, 
 	err := row.Scan(
 		&data.ID,
 		&data.RID,
-		// TODO add User columns
+		&data.Recording1,
+		&data.Recording2,
+		&data.Recording3,
+		&data.Recording1Normalised,
+		&data.Recording2Normalised,
+		&data.Recording3Normalised,
+		&data.Recording1Mfcc,
+		&data.Recording2Mfcc,
+		&data.Recording3Mfcc,
 		&data.CreatedAt,
 		&data.UpdatedAt,
 	)
@@ -173,11 +209,15 @@ func (r UserDBHandler) SelectAllData(projectRid uuid.UUID, datamodelRid uuid.UUI
 		`SELECT
 			id,
 			rid,
-			owner_rid,
-			COALESCE(parent_id, 0),
-			parent_rid,
-			parent_column,
-			details,
+			recording_1,
+			recording_2,
+			recording_3,
+			recording_1_normalised,
+			recording_2_normalised,
+			recording_3_normalised,
+			recording_1_mfcc,
+			recording_2_mfcc,
+			recording_3_mfcc,
 			created_at,
 			updated_at
 		FROM
@@ -237,11 +277,15 @@ func (r UserDBHandler) SelectAllDataBySearch(projectRid uuid.UUID, datamodelRid 
 		`SELECT
 			id,
 			rid,
-			owner_rid,
-			COALESCE(parent_id, 0),
-			parent_rid,
-			parent_column,
-			details,
+			recording_1,
+			recording_2,
+			recording_3,
+			recording_1_normalised,
+			recording_2_normalised,
+			recording_3_normalised,
+			recording_1_mfcc,
+			recording_2_mfcc,
+			recording_3_mfcc,
 			created_at,
 			updated_at
 		FROM "user" 
