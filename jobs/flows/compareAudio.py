@@ -1,12 +1,7 @@
-from jobs.tasks.db_functions import get_user, init_db, update_user, close_db, get_latest_identification_attempt, get_vector_dist, update_latest_identification
+from jobs.tasks.db_functions import DBConfig, get_user, init_db, update_user, close_db, get_latest_identification_attempt, get_vector_dist, update_latest_identification_attempt
 from jobs.tasks.compare import preprocess_recording, extract_features
 import datetime
 # from sklearn.metrics import pairwise 
-
-
-# Example usage 
-file1 = './cat.wav' 
-file2 = './fred2.wav' 
 
 
 def register_user(uid):
@@ -21,7 +16,7 @@ def register_user(uid):
     for recording in preprocessed_recordings:
         mfccs.append(extract_features(recording))
     
-    update_user(conn, uid, preprocessed_recordings, mfcc_mean)
+    update_user(conn, uid, preprocessed_recordings, mfccs)
     close_db(conn)
 
 
@@ -43,7 +38,7 @@ def identify_attempt(uid):
 
     timestamp = datetime.datetime.timestamp()
     
-    update_latest_identification()
+    update_latest_identification_attempt()
 
  
 # def compare_audio(file1, file2): 
