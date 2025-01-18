@@ -72,6 +72,7 @@ func (r *Router) RegisterRoutes() {
 	// r.echo.Use(middleware.Logger())
 
 	// view
+	r.echo.GET("/", handler.HandleRegisterView)
 	r.echo.GET("/register", handler.HandleRegisterView)
 	r.echo.GET("/verifyEmail", handler.HandleVerifyEmailView)
 	r.echo.GET("/login", handler.HandleLoginView)
