@@ -54,11 +54,11 @@ templ VerifyEmail() {
 						Resend code
 					</button>
 				}
-				<button
+				<input
 					class="w-full bg-indigo-700 hover:bg-indigo-700 text-white font-bold p-2 my-2 rounded-lg"
 					type="submit"
 					value="Finish registration"
-				></button>
+				/>
 				<div class="flex flex-row justify-center">
 					<a class="inline-block align-baseline font-medium text-sm text-indigo-700 hover:text-indigo-500" href="/login">
 						Back to login
@@ -90,11 +90,6 @@ templ Login() {
 				<div class="text-sm font-medium text-gray-500 dark:text-gray-300">
 					Not registered? <a href="/register" class="text-indigo-700 hover:text-indigo-500 dark:text-indigo-500 hover:dark:text-indigo-400">Create account</a>
 				</div>
-			</div>
-			@components.DividerText("or login with")
-			<div class="flex flex-row gap-2">
-				@components.SigninGoogle()
-				@components.SigninApple()
 			</div>
 		}
 	}
