@@ -4662,6 +4662,11 @@ input {
   color: rgb(255 255 255 / var(--tw-text-opacity, 1)) !important;
 }
 
+.text-gray-600 {
+  --tw-text-opacity: 1 !important;
+  color: rgb(75 85 99 / var(--tw-text-opacity, 1)) !important;
+}
+
 .underline {
   text-decoration-line: underline !important;
 }
