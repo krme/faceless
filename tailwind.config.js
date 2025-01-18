@@ -12,9 +12,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Quicksand', 'sans-serif'],
+        sans: ['Oxanium', 'sans-serif'],
         serif: ['Merriweather', 'serif'],
-        montserrat: ['Montserrat', 'sans-serif'],
         icons: ['MaterialIcons'],
       },
     },
