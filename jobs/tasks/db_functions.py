@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+from typing import List
+from pydantic import BaseModel
 import os
 import asyncpg
 import ssl
@@ -15,6 +16,7 @@ class DBConfig(BaseModel):
     database: str
     host: str
     port: str
+
 
 def load_db_config() -> DBConfig:
     return DBConfig(
@@ -110,8 +112,6 @@ async def get_latest_identification_attempt(db_config: DBConfig, rid: UUID):
     return recordings
 
 
-
-
 @task
 async def update_user(db_config: DBConfig, rid: UUID, recordings_normalised, mfcc):
     conn = None
@@ -119,18 +119,21 @@ async def update_user(db_config: DBConfig, rid: UUID, recordings_normalised, mfc
         logger = get_run_logger()
         conn = await init_db(db_config)
 
-        # SQL-Query zur Einfügung der Embeddings in die Datenbank
         insert_query = """
-            UPDATE DB.user SET 
-            recording_1_normalised = $1, recording_2_normalised = $2, recording_3_normalised = $3 
-            recording_1_mfcc = $4, recording_2_mfcc = $5, recording_3_mfcc = $6
-            WHERE rid=$7 ;
+            UPDATE
+                "user"
+            SET
+                recording_1_normalised = $1,
+                recording_2_normalised = $2,
+                recording_3_normalised = $3,
+                recording_1_mfcc = $4,
+                recording_2_mfcc = $5,
+                recording_3_mfcc = $6,
+                updated_at = NOW()
+            WHERE
+                rid=$7;
         """
 
-        #insert_values = []
-        #for recording in recordings_normalised:
-        #    insert_values.append((chunk_diff.chunk_id, chunk_diff.chunk_rid, chunk_diff.flow_id, chunk_diff.diff_type.value, chunk_diff.summary, chunk_diff.recommendation))
-        
         # Einfügen in die Datenbank
         await conn.executemany(insert_query, recordings_normalised[0],recordings_normalised[1],recordings_normalised[2], mfcc[0],mfcc[1],mfcc[2],rid)
         logger.info(f"3 recordings_normalised and mfccs inserted successfully")
@@ -153,13 +156,16 @@ async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, r
 
         # SQL-Query zur Einfügung der Embeddings in die Datenbank
         insert_query = """
-            UPDATE DB.user SET recording_normalised = $1, recording_mfcc = $2 WHERE rid=$3 ;
+            UPDATE
+                "user"
+            SET
+                recording_normalised = $1,
+                recording_mfcc = $2,
+                updated_at = NOW()
+            WHERE
+                rid=$3;
         """
 
-        #insert_values = []
-        #for recording in recordings:
-        #    insert_values.append((chunk_diff.chunk_id, chunk_diff.chunk_rid, chunk_diff.flow_id, chunk_diff.diff_type.value, chunk_diff.summary, chunk_diff.recommendation))
-        
         # Einfügen in die Datenbank
         await conn.executemany(insert_query, recording_normalised, mfcc, rid)
         logger.info(f"1 recording_normalised and mfcc inserted successfully")
@@ -173,9 +179,8 @@ async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, r
             print("Database connection closed successfully")
 
 
-
 @task
-async def get_vector_dist(db_config: DBConfig, rid UUID, recording_mfcc ):
+async def get_vector_dist(db_config: DBConfig, rid: UUID, recording_mfcc: List[float]):
     '''
     Gets chunks by ordered by vector distance and with a distance threshhold.
     The limit of chunks is used per doc_hash.
