@@ -1,25 +1,90 @@
 package screens
 
 import (
-	"ht/helper"
 	"ht/model"
 	"ht/web/view/components"
 	"ht/web/view/layout"
 )
 
-templ User() {
-	@layout.Index("User") {
-		@layout.MenuWrapper() {
+templ User(user *model.User) {
+	@layout.Index("Account") {
+		@layout.InnerBody(100, 100, 0, 0) {
+			<div class="max-w-full lg:w-[60vw]">
+				<div class="w-full flex-row lg:flex lg:items-center lg:justify-between mb-8">
+					<div class="min-w-0 flex-1">
+						<h1>Your account</h1>
+						<div class="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap">
+							@components.HeaderInfo(user.CreatedAt.Format("2006-01-02"), "event")
+							@components.HeaderInfo(user.UpdatedAt.Format("2006-01-02"), "edit_calendar")
+						</div>
+					</div>
+				</div>
+				@RecordSentence("This is a sentence to record")
+			</div>
 		}
-		@BodyLoaderUser()
 	}
 }
 
-templ BodyLoaderUser() {
-	@components.LoadOrTrigger(&model.ComponentTrigger{
-		ComponentUrl: "/project/" + helper.GetRequestContext(ctx).ProjectRID.String() + "/user/body",
-		Trigger:      "reloadUser",
-	}) {
-		@layout.InnerBody(16, 20, 8, 8)
-	}
+templ RecordSentence(sentence string) {
+	<div class="card">
+		<div class="w-full flex-row lg:flex lg:items-center lg:justify-between mb-8">
+			<div class="min-w-0 flex-1">
+				<div class="flex flex-col  gap-4">
+					<h1>Record</h1>
+					// TODO: add select state feature (if selected ) - check
+					//TODO: add recording feature 
+					//TODO: Add logic for sending requests to server - where are the endpoints?
+					<div class="flex flex-row items-center justify-between gap-4 bg-indingo-500">
+						<span class="text-gray-600">{ sentence }</span>
+						<div class="flex gap-2">
+							<button
+								type="button"
+								class="inline-flex items-center p-2 rounded-full bg-red-600 hover:bg-red-500"
+								_="init
+									set $isRecording to false
+								  on click 
+									if $isRecording is false
+										set $isRecording to true
+										remove .bg-green-600 from me
+										add .bg-red-600 to me
+										add .hover:bg-red-500 to me
+										put 'stop' into .material-icons in me
+										remove .hidden from next <button/>
+										add .inline-flex to next <button/>
+									else
+										set $isRecording to false
+										remove .bg-red-600 from me
+										remove .hover:bg-red-500 from me
+										add .bg-green-600 to me
+										add @disabled to me
+										put 'check' into .material-icons in me
+									end"
+							>
+								<span class="material-icons black text-xxl">mic</span>
+							</button>
+							<button
+								id="restartButton"
+								type="button"
+								class="items-center p-2 rounded-full hover:bg-slate-300 hidden"
+								_="on click
+									hide me
+									set $isRecording to false
+									remove .bg-green-600 from previous <button/>
+									remove @disabled from previous <button/>
+									add .bg-red-600 to previous <button/>
+									add .hover:bg-red-500 to previous <button/>
+									put 'Mic' into .material-icons in previous <button/>
+									add .hidden to me"
+							>
+								<span class="material-icons black text-xxl">restart_alt</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		let recording = 'false'
+	</script>
 }

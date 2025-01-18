@@ -59,7 +59,7 @@ func (r *Router) RegisterRoutes() {
 	m := NewMiddleware(r.server)
 
 	authView := handler.NewAuthView(r.server)
-	// userView := handler.NewUserView(r.server)
+	userView := handler.NewUserView(r.server)
 
 	r.echo.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(
 		rate.Limit(20),
@@ -89,7 +89,7 @@ func (r *Router) RegisterRoutes() {
 	r.echo.POST("/auth/logout", authView.HandleLogout)
 
 	// view
-	r.echo.GET("/account", m.ViewAuthMiddleware(authView.HandleAccount))
+	r.echo.GET("/account", m.ViewAuthMiddleware(userView.HandleUser))
 
 	r.echo.RouteNotFound("/*", handler.HandleNotFound)
 

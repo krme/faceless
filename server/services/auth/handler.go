@@ -81,7 +81,7 @@ func (s *AuthService) logoutSession(c echo.Context) error {
 	return nil
 }
 
-func (h *AuthService) RegisterWithEmail(c echo.Context) error {
+func (h *AuthService) HandleRegisterWithEmail(c echo.Context) error {
 	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
 
 	request := &struct {
@@ -129,7 +129,7 @@ func (h *AuthService) RegisterWithEmail(c echo.Context) error {
 	return nil
 }
 
-func (h *AuthService) RequestNewEmailVerificationCode(c echo.Context) error {
+func (h *AuthService) HandleRequestNewEmailVerificationCode(c echo.Context) error {
 	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
 	userId := helper.GetCurrentUserRID(c.Request().Context())
 
@@ -159,7 +159,7 @@ func (h *AuthService) RequestNewEmailVerificationCode(c echo.Context) error {
 	return nil
 }
 
-func (h *AuthService) VerifyEmail(c echo.Context) error {
+func (h *AuthService) HandleVerifyEmail(c echo.Context) error {
 	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
 	userId := helper.GetCurrentUserRID(c.Request().Context())
 
@@ -202,7 +202,7 @@ func (h *AuthService) VerifyEmail(c echo.Context) error {
 	return nil
 }
 
-func (h *AuthService) LoginWithEmail(c echo.Context) error {
+func (h *AuthService) HandleLoginWithEmail(c echo.Context) error {
 	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
 
 	request := &struct {
@@ -227,7 +227,7 @@ func (h *AuthService) LoginWithEmail(c echo.Context) error {
 	return nil
 }
 
-func (h *AuthService) RequestPasswordReset(c echo.Context) error {
+func (h *AuthService) HandleRequestPasswordReset(c echo.Context) error {
 	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
 
 	request := &struct {
@@ -265,7 +265,7 @@ func (h *AuthService) RequestPasswordReset(c echo.Context) error {
 	return nil
 }
 
-func (h *AuthService) ResetPassword(c echo.Context) error {
+func (h *AuthService) HandleResetPassword(c echo.Context) error {
 	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
 	userId := helper.GetCurrentUserRID(c.Request().Context())
 
@@ -313,7 +313,7 @@ func (h *AuthService) ResetPassword(c echo.Context) error {
 	return nil
 }
 
-func (h *AuthService) Logout(c echo.Context) error {
+func (h *AuthService) HandleLogout(c echo.Context) error {
 	err := h.logoutSession(c)
 	if err != nil {
 		return fmt.Errorf("error updating session: %v", err)
@@ -322,7 +322,7 @@ func (h *AuthService) Logout(c echo.Context) error {
 	return nil
 }
 
-func (h *AuthService) DeleteAuth(c echo.Context) error {
+func (h *AuthService) HandleDeleteAuth(c echo.Context) error {
 	// TODO check access
 	h.logger.Println("deleting auth definition")
 
@@ -337,7 +337,7 @@ func (h *AuthService) DeleteAuth(c echo.Context) error {
 	return nil
 }
 
-func (h *AuthService) GetAuth(c echo.Context) (*model.Auth, error) {
+func (h *AuthService) HandleGetAuth(c echo.Context) (*model.Auth, error) {
 	// TODO check access
 	h.logger.Println("getting auth definition")
 

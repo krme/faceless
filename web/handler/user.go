@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"ht/model"
 	"ht/server"
 	"ht/web/view/screens"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -19,7 +21,7 @@ func NewUserView(server *server.Server) *UserView {
 }
 
 func (r *UserView) HandleUser(c echo.Context) error {
-	return render(c, screens.User())
+	return render(c, screens.User(&model.User{CreatedAt: time.Now()}))
 }
 
 // func (r *UserView) HandleUserBody(c echo.Context) error {
