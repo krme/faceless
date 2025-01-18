@@ -6,6 +6,11 @@ import datetime
 # from sklearn.metrics import pairwise 
 
 
+# Example usage 
+file1 = './cat.wav' 
+file2 = './fred2.wav' 
+
+
 def register_user(uid):
     conn = init_db()
     recordings = get_user(conn, uid)
