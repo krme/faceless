@@ -26,7 +26,7 @@ def compare_audio(file1, file2):
  
 # Example usage 
 file1 = './cat.wav' 
-file2 = './elephant.wav' 
+file2 = './fred2.wav' 
 
 
 # file1 = './700-122866-0000.flac' 
