@@ -81,7 +81,7 @@ func (r *AuthView) HandleVerifyEmail(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	c.Response().Header().Add("HX-Redirect", "/account")
+	c.Response().Header().Add("HX-Redirect", "/user/onboardingStart")
 
 	return c.NoContent(http.StatusOK)
 }
@@ -93,7 +93,7 @@ func (r *AuthView) HandleLoginWithEmail(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
 
-	c.Response().Header().Add("HX-Redirect", "/account")
+	c.Response().Header().Add("HX-Redirect", "/user")
 
 	return c.NoContent(http.StatusOK)
 }
