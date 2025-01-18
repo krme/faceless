@@ -23,24 +23,67 @@ templ CenterCard(title string, hxPost string) {
 
 templ Register() {
 	@layout.Index("Register") {
-		@CenterCard("Register", "/auth/registerWithEmail") {
-			<div class="mb-4">
-				@components.InputText("Email", "Your email", "email", "email@example.com", "email", "")
+		<div class="h-screen w-96 flex flex-col bg-[#130D1D] justify-center overflow-hidden pt-5 pb-80">
+			<div class="h-full flex flex-col gap-24 justify-between">
+				<div class="items-start gap-4 inline-flex">
+					<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
+					<h2 class="text-[#F0F5EE] text-5xl font-normal">Faceless</h2>
+				</div>
+				<div class="flex flex-col gap-10">
+					<div class="justify-start items-start gap-4 inline-flex">
+						<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
+						<div class="flex-col justify-start items-start gap-1 inline-flex">
+							<div class="text-[#F0F5EE] text-2xl font-semibold">Sign up</div>
+							<div class="text-[#F0F5EE] text-sm font-normal">Create your account.</div>
+						</div>
+					</div>
+					<div class="self-stretch justify-start items-start gap-4 inline-flex">
+						<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
+						<div class="flex-col justify-start items-start gap-1 inline-flex">
+							<div class="text-[#F0F5EE] text-2xl font-semibold">IDnow Verification </div>
+							<div class="text-[#F0F5EE] text-sm font-normal">The last time you’ll need to verify through IDnow</div>
+						</div>
+					</div>
+					<div class="justify-start items-start gap-4 inline-flex">
+						<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
+						<div class="flex-col justify-start items-start gap-1 inline-flex">
+							<div class="text-[#F0F5EE] text-2xl font-semibold">Voice Recordings</div>
+							<div class="text-[#F0F5EE] text-sm font-normal">Record 3 simple sentences to get verified</div>
+						</div>
+					</div>
+				</div>
 			</div>
-			<div class="mb-6">
-				@components.InputPassword("Password", "password", "password")
-			</div>
-			<input
-				class="w-full bg-indigo-700 hover:bg-indigo-500 text-white font-bold p-2 my-2 rounded-lg"
-				type="submit"
-				value="Register"
-			/>
-			<div class="flex flex-row justify-center">
-				<a class="inline-block align-baseline font-medium text-sm text-indigo-700 hover:text-indigo-500" href="/login">
-					Already registered?
-				</a>
-			</div>
-		}
+		</div>
+		<div class="grow flex flex-col self-stretch bg-[#F0F5EE] justify-center items-center">
+			@components.Form(components.FormConf{HxPost: "/auth/registerWithEmail", Class: "mb-4 w-96"}) {
+				<h1 class="text-xl font-bold pb-4">
+					Register
+				</h1>
+				<div class="mb-4">
+					@components.InputText("Email", "Your email", "email", "email@example.com", "email", "")
+				</div>
+				<div class="mb-6">
+					@components.InputPassword("Password", "password", "password")
+				</div>
+				<div>
+					<span class="text-zinc-500 text-sm font-normal font-['Inter'] leading-tight">By clicking continue, you agree to our<br/></span>
+					<span class="text-zinc-500 text-sm font-normal font-['Inter'] underline leading-tight">Terms of Service</span>
+					<span class="text-zinc-500 text-sm font-normal font-['Inter'] leading-tight">and </span>
+					<span class="text-zinc-500 text-sm font-normal font-['Inter'] underline leading-tight">Privacy Policy</span>
+					<span class="text-zinc-500 text-sm font-normal font-['Inter'] leading-tight">.</span>
+				</div>
+				<input
+					class="w-full button_hover_primary text-white font-bold p-2 my-2 rounded-lg cursor-pointer"
+					type="submit"
+					value="Register"
+				/>
+				<div class="flex flex-row justify-center">
+					<a class="inline-block align-baseline font-medium text-sm text-indigo-700 hover:text-indigo-500 cursor-pointer" href="/login">
+						Already registered?
+					</a>
+				</div>
+			}
+		</div>
 	}
 }
 
@@ -71,27 +114,62 @@ templ VerifyEmail() {
 
 templ Login() {
 	@layout.Index("Login") {
-		@CenterCard("Login", "/auth/loginWithEmail") {
-			<div class="mb-4">
-				@components.InputText("Email", "Your email", "email", "email@example.com", "email", "")
-			</div>
-			<div class="mb-6">
-				@components.InputPassword("Password", "password", "password")
-				<a class="mt-2 inline-block align-baseline font-medium text-sm text-indigo-700 hover:text-indigo-500 dark:text-indigo-500 hover:dark:text-indigo-400" href="/forgotPassword">
-					Forgot Password?
-				</a>
-			</div>
-			<input
-				class="w-full bg-indigo-700 hover:bg-indigo-700 text-white font-bold p-2 my-2 rounded-lg"
-				type="submit"
-				value="Login"
-			/>
-			<div class="flex flex-row justify-center">
-				<div class="text-sm font-medium text-gray-500 dark:text-gray-300">
-					Not registered? <a href="/register" class="text-indigo-700 hover:text-indigo-500 dark:text-indigo-500 hover:dark:text-indigo-400">Create account</a>
+		<div class="w-[1920px] h-[1080px] bg-white justify-start items-end inline-flex overflow-hidden">
+			<div class="w-[535px] self-stretch p-10 bg-[#130D1D] flex-col justify-center items-start gap-[187px] inline-flex overflow-hidden">
+				<div class="flex-col justify-start items-start gap-10 flex">
+					<div class="justify-start items-start gap-4 inline-flex">
+						<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
+						<div class="flex-col justify-start items-start gap-1 inline-flex">
+							<div class="text-[#F0F5EE] text-2xl font-semibold font-['Oxanium']">Sign up</div>
+							<div class="text-[#F0F5EE] text-sm font-normal font-['Oxanium']">Create your account.</div>
+						</div>
+					</div>
+					<div class="self-stretch justify-start items-start gap-4 inline-flex">
+						<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
+						<div class="flex-col justify-start items-start gap-1 inline-flex">
+							<div class="text-[#F0F5EE] text-2xl font-semibold font-['Oxanium']">IDnow Verification </div>
+							<div class="text-[#F0F5EE] text-sm font-normal font-['Oxanium']">The last time you’ll need to verify through IDnow</div>
+						</div>
+					</div>
+					<div class="justify-start items-start gap-4 inline-flex">
+						<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
+						<div class="flex-col justify-start items-start gap-1 inline-flex">
+							<div class="text-[#F0F5EE] text-2xl font-semibold font-['Oxanium']">Voice Recordings</div>
+							<div class="text-[#F0F5EE] text-sm font-normal font-['Oxanium']">Record 3 simple sentences to get verified</div>
+						</div>
+					</div>
 				</div>
 			</div>
-		}
+			<div class="grow shrink basis-0 self-stretch py-10 bg-[#F0F5EE] flex-col justify-between items-center inline-flex">
+				<div class="w-[574px] justify-start items-center gap-2 inline-flex">
+					<div class="px-1 pt-1 pb-[3px] flex-col justify-center items-center gap-2.5 inline-flex overflow-hidden"></div>
+					<div class="px-1 pt-1 pb-[3px] flex-col justify-center items-center gap-2.5 inline-flex overflow-hidden"></div>
+					<div class="px-1 pt-1 pb-[3px] flex-col justify-center items-center gap-2.5 inline-flex overflow-hidden"></div>
+				</div>
+				@CenterCard("Login", "/auth/loginWithEmail") {
+					<div class="mb-4">
+						@components.InputText("Email", "Your email", "email", "email@example.com", "email", "")
+					</div>
+					<div class="mb-6">
+						@components.InputPassword("Password", "password", "password")
+						<a class="mt-2 inline-block align-baseline font-medium text-sm text-indigo-700 hover:text-indigo-500 dark:text-indigo-500 hover:dark:text-indigo-400" href="/forgotPassword">
+							Forgot Password?
+						</a>
+					</div>
+					<input
+						class="w-full bg-indigo-700 hover:bg-indigo-700 text-white font-bold p-2 my-2 rounded-lg"
+						type="submit"
+						value="Login"
+					/>
+					<div class="flex flex-row justify-center">
+						<div class="text-sm font-medium text-gray-500 dark:text-gray-300">
+							Not registered? <a href="/register" class="text-indigo-700 hover:text-indigo-500 dark:text-indigo-500 hover:dark:text-indigo-400">Create account</a>
+						</div>
+					</div>
+				}
+				<div><span class="text-zinc-500 text-sm font-normal font-['Inter'] leading-tight">By clicking continue, you agree to our<br/> </span><span class="text-zinc-500 text-sm font-normal font-['Inter'] underline leading-tight">Terms of Service</span><span class="text-zinc-500 text-sm font-normal font-['Inter'] leading-tight">and </span><span class="text-zinc-500 text-sm font-normal font-['Inter'] underline leading-tight">Privacy Policy</span><span class="text-zinc-500 text-sm font-normal font-['Inter'] leading-tight">.</span></div>
+			</div>
+		</div>
 	}
 }
 
