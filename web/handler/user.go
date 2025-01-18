@@ -6,6 +6,7 @@ import (
 	"ht/server"
 	"ht/web/view/screens"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -31,8 +32,13 @@ func (r *UserView) HandleOnboardingStart(c echo.Context) error {
 }
 
 func (r *UserView) HandleOnboardingRecording(c echo.Context) error {
-	// TODO user from db and step from url
-	return render(c, screens.OnboardingRecording(&model.User{CreatedAt: time.Now()}, 1))
+	currentStepString := c.Param("step")
+	currentStep, err := strconv.Atoi(currentStepString)
+	if err != nil {
+		return err
+	}
+
+	return render(c, screens.OnboardingRecording(&model.User{CreatedAt: time.Now()}, currentStep))
 }
 
 func (r *UserView) HandleOnboardingSuccess(c echo.Context) error {
@@ -41,10 +47,13 @@ func (r *UserView) HandleOnboardingSuccess(c echo.Context) error {
 
 // api
 func (r *UserView) HandleCreateReferenceRecording(c echo.Context) error {
-	// TODO get current step from url
-	currentStep := 1
+	currentStepString := c.Param("step")
+	currentStep, err := strconv.Atoi(currentStepString)
+	if err != nil {
+		return err
+	}
 
-	_, err := r.server.UserService.CreateReferenceRecording(c)
+	_, err = r.server.UserService.CreateReferenceRecording(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}

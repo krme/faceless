@@ -1389,18 +1389,6 @@ input {
   top: 10vh !important;
 }
 
-.left-\[10\.59px\] {
-  left: 10.59px !important;
-}
-
-.left-\[12\.70px\] {
-  left: 12.70px !important;
-}
-
-.top-\[2\.52px\] {
-  top: 2.52px !important;
-}
-
 .z-10 {
   z-index: 10 !important;
 }
@@ -2876,8 +2864,12 @@ input {
   height: 2rem !important;
 }
 
-.h-\[1080px\] {
-  height: 1080px !important;
+.h-9 {
+  height: 2.25rem !important;
+}
+
+.h-\[21px\] {
+  height: 21px !important;
 }
 
 .h-auto {
@@ -2890,22 +2882,6 @@ input {
 
 .h-screen {
   height: 100vh !important;
-}
-
-.h-9 {
-  height: 2.25rem !important;
-}
-
-.h-\[15\.48px\] {
-  height: 15.48px !important;
-}
-
-.h-\[18px\] {
-  height: 18px !important;
-}
-
-.h-\[21px\] {
-  height: 21px !important;
 }
 
 .max-h-\[80vh\] {
@@ -2965,20 +2941,12 @@ input {
   width: 0.2rem !important;
 }
 
-.w-\[1920px\] {
-  width: 1920px !important;
+.w-\[21px\] {
+  width: 21px !important;
 }
 
 .w-\[30px\] {
   width: 30px !important;
-}
-
-.w-\[535px\] {
-  width: 535px !important;
-}
-
-.w-\[574px\] {
-  width: 574px !important;
 }
 
 .w-auto {
@@ -2991,27 +2959,6 @@ input {
 
 .w-screen {
   width: 100vw !important;
-}
-
-.w-\[21px\] {
-  width: 21px !important;
-}
-
-.w-\[50\.53px\] {
-  width: 50.53px !important;
-}
-
-.w-\[67\.41px\] {
-  width: 67.41px !important;
-}
-
-.w-\[78px\] {
-  width: 78px !important;
-}
-
-.w-fit {
-  width: -moz-fit-content !important;
-  width: fit-content !important;
 }
 
 .min-w-0 {
@@ -3148,10 +3095,6 @@ input {
   align-items: flex-start !important;
 }
 
-.items-end {
-  align-items: flex-end !important;
-}
-
 .items-center {
   align-items: center !important;
 }
@@ -3198,10 +3141,6 @@ input {
 
 .gap-4 {
   gap: 1rem !important;
-}
-
-.gap-\[187px\] {
-  gap: 187px !important;
 }
 
 .gap-6 {
@@ -3259,6 +3198,10 @@ input {
   border-radius: 0.25rem !important;
 }
 
+.rounded-\[3px\] {
+  border-radius: 3px !important;
+}
+
 .rounded-full {
   border-radius: 9999px !important;
 }
@@ -3267,16 +3210,12 @@ input {
   border-radius: 0.5rem !important;
 }
 
-.rounded-xl {
-  border-radius: 0.75rem !important;
-}
-
-.rounded-\[3px\] {
-  border-radius: 3px !important;
-}
-
 .rounded-md {
   border-radius: 0.375rem !important;
+}
+
+.rounded-xl {
+  border-radius: 0.75rem !important;
 }
 
 .rounded-b {
@@ -3303,6 +3242,10 @@ input {
 
 .border-solid {
   border-style: solid !important;
+}
+
+.border-black\/20 {
+  border-color: rgb(0 0 0 / 0.2) !important;
 }
 
 .border-gray-200 {
@@ -3333,10 +3276,6 @@ input {
 .border-red-500 {
   --tw-border-opacity: 1 !important;
   border-color: rgb(239 68 68 / var(--tw-border-opacity, 1)) !important;
-}
-
-.border-black\/20 {
-  border-color: rgb(0 0 0 / 0.2) !important;
 }
 
 .bg-\[\#130D1D\] {
@@ -3401,11 +3340,6 @@ input {
 .bg-white {
   --tw-bg-opacity: 1 !important;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
-}
-
-.bg-\[\#9D76F4\] {
-  --tw-bg-opacity: 1 !important;
-  background-color: rgb(157 118 244 / var(--tw-bg-opacity, 1)) !important;
 }
 
 .bg-opacity-50 {
@@ -4040,10 +3974,6 @@ input {
 
 .pb-96 {
   padding-bottom: 24rem !important;
-}
-
-.pb-\[3px\] {
-  padding-bottom: 3px !important;
 }
 
 .pb-px {
@@ -4766,10 +4696,6 @@ input {
   font-family: 'Inter' !important;
 }
 
-.font-\[\'Oxanium\'\] {
-  font-family: 'Oxanium' !important;
-}
-
 .text-2xl {
   font-size: 1.5rem !important;
   line-height: 2rem !important;
@@ -4825,16 +4751,16 @@ input {
   font-weight: 600 !important;
 }
 
+.leading-loose {
+  line-height: 2 !important;
+}
+
 .leading-none {
   line-height: 1 !important;
 }
 
 .leading-tight {
   line-height: 1.25 !important;
-}
-
-.leading-loose {
-  line-height: 2 !important;
 }
 
 .tracking-tight {
@@ -4846,9 +4772,19 @@ input {
   color: rgb(19 13 29 / var(--tw-text-opacity, 1)) !important;
 }
 
+.text-\[\#150D1D\] {
+  --tw-text-opacity: 1 !important;
+  color: rgb(21 13 29 / var(--tw-text-opacity, 1)) !important;
+}
+
 .text-\[\#F0F5EE\] {
   --tw-text-opacity: 1 !important;
   color: rgb(240 245 238 / var(--tw-text-opacity, 1)) !important;
+}
+
+.text-\[\#F9F9F9\] {
+  --tw-text-opacity: 1 !important;
+  color: rgb(249 249 249 / var(--tw-text-opacity, 1)) !important;
 }
 
 .text-gray-400 {
@@ -4894,16 +4830,6 @@ input {
 .text-zinc-500 {
   --tw-text-opacity: 1 !important;
   color: rgb(113 113 122 / var(--tw-text-opacity, 1)) !important;
-}
-
-.text-\[\#150D1D\] {
-  --tw-text-opacity: 1 !important;
-  color: rgb(21 13 29 / var(--tw-text-opacity, 1)) !important;
-}
-
-.text-\[\#F9F9F9\] {
-  --tw-text-opacity: 1 !important;
-  color: rgb(249 249 249 / var(--tw-text-opacity, 1)) !important;
 }
 
 .underline {

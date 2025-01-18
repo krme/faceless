@@ -6,10 +6,8 @@ import (
 	"ht/helper"
 	"ht/server"
 	"ht/web/handler"
-	"net/http"
 	"time"
 
-	"github.com/gorilla/csrf"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -65,8 +63,8 @@ func (r *Router) RegisterRoutes() {
 		rate.Limit(20),
 	)))
 	// TODO remove csrf.Secure(false) in production
-	csrfMiddleware := csrf.Protect(m.csrfKey, csrf.Path("/"), csrf.Secure(false), csrf.ErrorHandler(http.HandlerFunc(handler.HandleCSRFErrorView)))
-	r.echo.Use(echo.WrapMiddleware(csrfMiddleware))
+	// csrfMiddleware := csrf.Protect(m.csrfKey, csrf.Path("/"), csrf.Secure(false), csrf.ErrorHandler(http.HandlerFunc(handler.HandleCSRFErrorView)))
+	// r.echo.Use(echo.WrapMiddleware(csrfMiddleware))
 	r.echo.Use(middleware.Recover())
 	// r.echo.Use(m.ThrottleMiddleware)
 	// r.echo.Use(middleware.Logger())
@@ -92,11 +90,11 @@ func (r *Router) RegisterRoutes() {
 	r.echo.GET("/user", m.ViewAuthMiddleware(userView.HandleUser))
 
 	r.echo.GET("/user/onboardingStart", m.ViewAuthMiddleware(userView.HandleOnboardingStart))
-	r.echo.GET("/user/onboardingRecording", m.ViewAuthMiddleware(userView.HandleOnboardingRecording))
+	r.echo.GET("/user/onboardingRecording/:step", m.ViewAuthMiddleware(userView.HandleOnboardingRecording))
 	r.echo.GET("/user/onboardingSuccess", m.ViewAuthMiddleware(userView.HandleOnboardingSuccess))
 
 	// api
-	r.echo.POST("/user/createRefernceRecording/:step", userView.HandleCreateReferenceRecording)
+	r.echo.POST("/user/createReferenceRecording/:step", userView.HandleCreateReferenceRecording)
 
 	r.echo.RouteNotFound("/*", handler.HandleNotFound)
 
