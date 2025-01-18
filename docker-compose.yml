@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   psql:
-    image: postgres:latest
+    image: pgvector/pgvector:pg17
     environment:
       POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_USER: ${DB_USERNAME}
