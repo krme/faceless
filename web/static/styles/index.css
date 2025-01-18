@@ -175,7 +175,7 @@
     }
 
     .border_primary {
-        @apply border-indigo-500 dark:border-gray-400;
+        @apply border-indigo-800 dark:border-gray-400;
     }
     .border_secondary {
         @apply border-gray-100 dark:border-gray-600;
@@ -195,7 +195,7 @@
         @apply w-full rounded-lg border border-gray-200 bg-white dark:bg-gray-800;
     }
     .input_focus {
-        @apply rounded-lg focus:outline-none focus:border-2 focus:bg-[#130D1D];
+        @apply rounded-lg focus:outline-none focus:border-2;
     }
 
     .button_hover_primary {

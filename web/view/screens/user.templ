@@ -142,10 +142,10 @@ templ OnboardingStart() {
 					</div>
 					<div class="text-zinc-500 text-sm font-normal leading-tight">The last time you’ll have to do this. We promise.</div>
 				</div>
-				<div class="h-9 flex-col justify-start items-center gap-6 flex w-full">
-					<div class="self-stretch h-9 flex-col justify-start items-center gap-2 flex w-full">
-						<a class="self-stretch h-9 px-4 py-2  rounded-md shadow-sm justify-center items-center gap-1 inline-flex button_primary cursor-pointer" href="/user/onboardingRecording">
-							<div class="text-[#F9F9F9] text-sm font-medium leading-tight">Go to</div>
+				<div class="h-9 flex-col justify-center items-center gap-6 flex w-full place-self-center">
+					<div class=" h-9 flex-col justify-center items-center gap-2 flex w-56 place-self-center">
+						<a class="self-stretch h-9 px-4 py-2  rounded-md shadow-sm justify-center items-center gap-1 inline-flex button_primary cursor-pointer place-self-center" href="/user/onboardingRecording">
+							<div class="text-[#F9F9F9] font-bold">Go to</div>
 							// <img class="w-[21px] h-[21px] rounded-[3px] border border-black/20" src="https://via.placeholder.com/21x21"/>
 						</a>
 					</div>
@@ -157,44 +157,8 @@ templ OnboardingStart() {
 
 templ OnboardingRecording(user *model.User, step int) {
 	@layout.Index("Reference recording") {
-		<div class="h-screen w-96 flex flex-col bg-[#130D1D] justify-center overflow-hidden pt-5 pb-80">
-			<div class="h-full flex flex-col gap-24 justify-between">
-				<div class="items-start gap-4 inline-flex">
-					<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
-					<h2 class="text-[#F0F5EE] text-5xl font-normal">Faceless</h2>
-				</div>
-				<div class="flex flex-col gap-10">
-					<div class="justify-start items-start gap-4 inline-flex">
-						<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
-						<div class="flex-col justify-start items-start gap-1 inline-flex">
-							<a href="/register" class="text-[#F0F5EE] text-2xl font-semibold cursor-pointer">
-								<div class="text-[#F0F5EE] text-2xl font-semibold">Sign up</div>
-								<div class="text-[#F0F5EE] text-sm font-normal">Create your account.</div>
-							</a>
-						</div>
-					</div>
-					<div class="self-stretch justify-start items-start gap-4 inline-flex">
-						<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
-						<div class="flex-col justify-start items-start gap-1 inline-flex">
-							<a href="/user/onboardingStart" class="text-[#F0F5EE] text-2xl font-semibold cursor-pointer">
-								<div class="text-[#F0F5EE] text-2xl font-semibold">IDnow Verification </div>
-								<div class="text-[#F0F5EE] text-sm font-normal">The last time you’ll need to verify through IDnow</div>
-							</a>
-						</div>
-					</div>
-					<div class="justify-start items-start gap-4 inline-flex">
-						<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
-						<div class="flex-col justify-start items-start gap-1 inline-flex">
-							<a href="/user/onboardingRecording/1" class="text-[#F0F5EE] text-2xl font-semibold cursor-pointer">
-								<div class="text-[#F0F5EE] text-2xl font-semibold">Voice Recordings</div>
-								<div class="text-[#F0F5EE] text-sm font-normal">Record 3 simple sentences to get verified</div>
-							</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		@RecordSentence("hello", 1)
+		@Sidebar()
+		@RecordSentence("A sentient toaster serenaded the moon in Morse code.")
 	}
 }
 
@@ -214,19 +178,82 @@ templ OnboardingSuccess() {
 	}
 }
 
-templ RecordSentence(sentence string, step int) {
-	<div class="card">
-		<div class="w-full flex-row lg:flex lg:items-center lg:justify-between mb-8">
+templ Sidebar() {
+	<div class="h-screen w-96 flex flex-col bg-[#130D1D] justify-center overflow-hidden pt-5 pb-80">
+		<div class="h-full flex flex-col gap-24 justify-between">
+			<div class="items-start gap-4 inline-flex">
+				<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
+				<h2 class="text-[#F0F5EE] text-5xl font-normal">Faceless</h2>
+			</div>
+			<div class="flex flex-col gap-10">
+				<div class="justify-start items-start gap-4 inline-flex">
+					<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
+					<div class="flex-col justify-start items-start gap-1 inline-flex">
+						<a href="/register" class="text-[#F0F5EE] text-2xl font-semibold cursor-pointer">
+							<div class="text-[#F0F5EE] text-2xl font-semibold">Sign up</div>
+							<div class="text-[#F0F5EE] text-sm font-normal">Create your account.</div>
+						</a>
+					</div>
+				</div>
+				<div class="self-stretch justify-start items-start gap-4 inline-flex">
+					<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
+					<div class="flex-col justify-start items-start gap-1 inline-flex">
+						<a href="/user/onboardingStart" class="text-[#F0F5EE] text-2xl font-semibold cursor-pointer">
+							<div class="text-[#F0F5EE] text-2xl font-semibold">IDnow Verification </div>
+							<div class="text-[#F0F5EE] text-sm font-normal">The last time you’ll need to verify through IDnow</div>
+						</a>
+					</div>
+				</div>
+				<div class="justify-start items-start gap-4 inline-flex">
+					<div class="w-[30px] self-stretch flex-col justify-center items-center gap-2.5 inline-flex"></div>
+					<div class="flex-col justify-start items-start gap-1 inline-flex">
+						<a href="/user/onboardingRecording" class="text-[#F0F5EE] text-2xl font-semibold cursor-pointer">
+							<div class="text-[#F0F5EE] text-2xl font-semibold">Voice Recordings</div>
+							<div class="text-[#F0F5EE] text-sm font-normal">Record 3 simple sentences to get verified</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ RecordSentence(sentence string) {
+	<div
+		class="grow flex flex-col self-stretch bg-[#F0F5EE] justify-center items-center px-12"
+		_="init 
+			set $step to 1
+			put 'Record yourself saying the following sentence ' + $step + '/3' into #stepHeader
+			add @disabled to #nextButton"
+	>
+		<div class="w-full flex-row lg:flex lg:items-center lg:justify-between mb-2">
 			<div class="min-w-0 flex-1">
-				<div class="flex flex-col  gap-4">
-					<h1>{ `Record yourself saying the following sentence ({step}/3)` }</h1>
-					// TODO: add select state feature (if selected ) - check
-					//TODO: add recording feature 
-					//TODO: Add logic for sending requests to server - where are the endpoints?
-					<div class="flex flex-row items-center justify-between gap-4 bg-indingo-500">
-						<span class="text-gray-600">{ sentence }</span>
-						<div class="flex gap-2">
+				<div class="flex flex-col items-center justify-center">
+					<h1 id="stepHeader"></h1>
+					<span class="text-gray-600">"{ sentence }"</span>
+					<!-- TODO: add select state feature (if selected ) - check -->
+					<!-- TODO: add recording feature -->
+					<!-- TODO: Add logic for sending requests to server - where are the endpoints? -->
+					<div class="flex gap-4 w-full">
+						<div class="flex gap-2 my-5">
 							<button
+								id="restartButton1"
+								type="button"
+								class="items-center p-2 rounded-full hover:bg-slate-300 hidden"
+								_="on click
+									hide me
+									set $isRecording to false
+									remove .bg-green-600 from next <button/>
+									remove @disabled from #nextButton
+									add .bg-red-600 to next <button/>
+									add .hover:bg-red-500 to next <button/>
+									put 'Mic' into .material-icons in next <button/>
+									add .hidden to me"
+							>
+								<span class="material-icons black text-xxl">restart_alt</span>
+							</button>
+							<button
+								id="recordButton"
 								type="button"
 								class="inline-flex items-center p-2 rounded-full bg-red-600 hover:bg-red-500"
 								_="init
@@ -239,38 +266,52 @@ templ RecordSentence(sentence string, step int) {
 										add .bg-red-600 to me
 										add .hover:bg-red-500 to me
 										put 'stop' into .material-icons in me
-										remove .hidden from next <button/>
-										add .inline-flex to next <button/>
+										remove .hidden from previous <button/>
+										add .inline-flex to previous <button/>
 									else
 										stopRecording()
 										set $isRecording to false
 										remove .bg-red-600 from me
 										remove .hover:bg-red-500 from me
+										remove @disabled from #nextButton
 										add .bg-green-600 to me
 										add @disabled to me
 										put 'check' into .material-icons in me
+										remove .hidden from #sparkle
 									end"
 							>
 								<span class="material-icons black text-xxl">mic</span>
 							</button>
-							<button
-								id="restartButton"
-								type="button"
-								class="items-center p-2 rounded-full hover:bg-slate-300 hidden"
-								_="on click
-									stopRecording()
-									set $isRecording to false
-									remove .bg-green-600 from previous <button/>
-									remove @disabled from previous <button/>
-									add .bg-red-600 to previous <button/>
-									add .hover:bg-red-500 to previous <button/>
-									put 'Mic' into .material-icons in previous <button/>
-									add .hidden to me"
-							>
-								<span class="material-icons black text-xxl">restart_alt</span>
-							</button>
+						</div>
+						<div class="flex flex-col items-center justify-center w-full">
+							<div class="w-full border-t border_primary my-5"></div>
 						</div>
 					</div>
+					<input
+						class="w-56 button_primary text-white font-bold p-2 my-2 rounded-lg cursor-pointer"
+						id="nextButton"
+						type="submit"
+						value="Next Recording"
+						_="on click
+							if $step is 3
+								go to url http://localhost:2323/user/onboardingSuccess
+							else
+								set $step to $step + 1
+								put 'Record yourself saying the following sentence ' + $step + '/3' into #stepHeader
+								set $isRecording to false
+								remove .bg-green-600 from #nextButton
+								remove @disabled from #nextButton
+								remove @disabled from #recordButton
+								add .bg-red-600 to #recordButton
+								add .hover:bg-red-500 to #recordButton
+								put 'Mic' into .material-icons in #recordButton
+								add .hidden to #restartButton1
+								add @disabled to me
+								add .hidden to #sparkle
+							if $step is 3
+									put 'Evaluate' into @value of me"
+					/>
+					<p class="text-indigo-500 hidden" id="sparkle">✨ Successfully recorded!</p>
 				</div>
 			</div>
 		</div>
