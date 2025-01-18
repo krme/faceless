@@ -175,7 +175,7 @@ async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, r
 
 
 @task
-async def get_vector_dist(db_config: DBConfig, rid UUID, recording_mfcc ):
+async def get_vector_dist(db_config: DBConfig, rid: UUID, recording_mfcc ):
     '''
     Gets chunks by ordered by vector distance and with a distance threshhold.
     The limit of chunks is used per doc_hash.
