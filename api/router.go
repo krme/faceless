@@ -89,7 +89,11 @@ func (r *Router) RegisterRoutes() {
 	r.echo.POST("/auth/logout", authView.HandleLogout)
 
 	// view
-	r.echo.GET("/account", m.ViewAuthMiddleware(userView.HandleUser))
+	r.echo.GET("/user", m.ViewAuthMiddleware(userView.HandleUser))
+
+	r.echo.GET("/onboardingStart", m.ViewAuthMiddleware(userView.HandleOnboardingStart))
+	r.echo.GET("/onboardingRecording", m.ViewAuthMiddleware(userView.HandleOnboardingRecording))
+	r.echo.GET("/onboardingSuccess", m.ViewAuthMiddleware(userView.HandleOnboardingSuccess))
 
 	r.echo.RouteNotFound("/*", handler.HandleNotFound)
 

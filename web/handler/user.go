@@ -24,23 +24,15 @@ func (r *UserView) HandleUser(c echo.Context) error {
 	return render(c, screens.User(&model.User{CreatedAt: time.Now()}))
 }
 
-// func (r *UserView) HandleUserBody(c echo.Context) error {
-// 	auths, err := r.server.AuthService.GetAuths(c)
-// 	if err != nil {
-// 		return echo.NewHTTPError(http.StatusNotFound, err)
-// 	}
+func (r *UserView) HandleOnboardingStart(c echo.Context) error {
+	return render(c, screens.OnboardingStart())
+}
 
-// 	var tableDatas []model.Mapper
-// 	for _, v := range auths {
-// 		tableDatas = append(tableDatas, v)
-// 	}
-// 	var body = screens.BodyUser(model.DatamodelForUser, tableDatas)
+func (r *UserView) HandleOnboardingRecording(c echo.Context) error {
+	// TODO user from db and step from url
+	return render(c, screens.OnboardingRecording(&model.User{CreatedAt: time.Now()}, 1))
+}
 
-// 	return render(c, body)
-// }
-
-// func (r *UserView) HandlePopupCreateUser(c echo.Context) error {
-// 	projectRid := helper.GetRequestContext(c.Request().Context()).ProjectRID
-
-// 	return renderPopup(c, components.PopupCreate(model.DatamodelForUser, "/project/"+projectRid.String()+"/user/createUser"))
-// }
+func (r *UserView) HandleOnboardingSuccess(c echo.Context) error {
+	return render(c, screens.OnboardingSuccess())
+}

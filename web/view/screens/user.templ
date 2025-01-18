@@ -7,7 +7,7 @@ import (
 )
 
 templ User(user *model.User) {
-	@layout.Index("Account") {
+	@layout.Index("User") {
 		@layout.InnerBody(100, 100, 0, 0) {
 			<div class="max-w-full lg:w-[60vw]">
 				<div class="w-full flex-row lg:flex lg:items-center lg:justify-between mb-8">
@@ -19,13 +19,41 @@ templ User(user *model.User) {
 						</div>
 					</div>
 				</div>
-				@RecordSentence("This is a sentence to record")
 			</div>
 		}
 	}
 }
 
-templ RecordSentence(sentence string) {
+templ OnboardingStart() {
+	@layout.Index("Reference recording") {
+	}
+}
+
+templ OnboardingRecording(user *model.User, step int) {
+	@layout.Index("Reference recording") {
+		@layout.InnerBody(100, 100, 0, 0) {
+			@RecordSentence("This is a sentence to record", step)
+		}
+	}
+}
+
+templ OnboardingSuccess() {
+	@layout.Index("Reference recording") {
+		<script>
+			const jsConfetti = new JSConfetti()
+			jsConfetti.addConfetti({
+				// emojis: ['🌈', '⚡️', '💥', '✨', '💫', '🌸'],
+				confettiColors: [
+					'#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd', '#f9bec7',
+				],
+				emojiSize: 30,
+				confettiNumber: 500,
+			})
+		</script>
+	}
+}
+
+templ RecordSentence(sentence string, step int) {
 	<div class="card">
 		<div class="w-full flex-row lg:flex lg:items-center lg:justify-between mb-8">
 			<div class="min-w-0 flex-1">
