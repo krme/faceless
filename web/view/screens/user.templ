@@ -216,10 +216,11 @@ templ OnboardingSuccess() {
 
 templ RecordSentence(sentence string) {
 	<div
-		class="flex flex-col card items-center justify-center bg-[#F0F5EE]"
+		class="grow flex flex-col self-stretch bg-[#F0F5EE] justify-center items-center px-12"
 		_="init 
 			set $step to 1
-			put 'Record yourself saying the following sentence ' + $step + '/3' into #stepHeader"
+			put 'Record yourself saying the following sentence ' + $step + '/3' into #stepHeader
+			add @disabled to #nextButton"
 	>
 		<div class="w-full flex-row lg:flex lg:items-center lg:justify-between mb-2">
 			<div class="min-w-0 flex-1">
@@ -239,7 +240,7 @@ templ RecordSentence(sentence string) {
 									hide me
 									set $isRecording to false
 									remove .bg-green-600 from next <button/>
-									remove @disabled from next <button/>
+									remove @disabled from #nextButton
 									add .bg-red-600 to next <button/>
 									add .hover:bg-red-500 to next <button/>
 									put 'Mic' into .material-icons in next <button/>
@@ -248,6 +249,7 @@ templ RecordSentence(sentence string) {
 								<span class="material-icons black text-xxl">restart_alt</span>
 							</button>
 							<button
+								id="recordButton"
 								type="button"
 								class="inline-flex items-center p-2 rounded-full bg-red-600 hover:bg-red-500"
 								_="init
@@ -265,6 +267,7 @@ templ RecordSentence(sentence string) {
 										set $isRecording to false
 										remove .bg-red-600 from me
 										remove .hover:bg-red-500 from me
+										remove @disabled from #nextButton
 										add .bg-green-600 to me
 										add @disabled to me
 										put 'check' into .material-icons in me
@@ -272,37 +275,33 @@ templ RecordSentence(sentence string) {
 							>
 								<span class="material-icons black text-xxl">mic</span>
 							</button>
-							<button
-								id="restartButton2"
-								type="button"
-								class="items-center p-2 rounded-full hover:bg-slate-300 hidden"
-								_="on click
-									hide me
-									set $isRecording to false
-									remove .bg-green-600 from previous <button/>
-									remove @disabled from previous <button/>
-									add .bg-red-600 to previous <button/>
-									add .hover:bg-red-500 to previous <button/>
-									put 'Mic' into .material-icons in previous <button/>
-									add .hidden to me"
-							>
-								<span class="material-icons black text-xxl">restart_alt</span>
-							</button>
 						</div>
 						<div class="flex flex-col items-center justify-center w-full">
 							<div class="w-full border-t border_primary my-5"></div>
 						</div>
 					</div>
 					<input
-						class="w-fit button_primary text-white font-bold p-2 my-2 rounded-lg cursor-pointer"
+						class="w-56 button_primary text-white font-bold p-2 my-2 rounded-lg cursor-pointer"
+						id="nextButton"
 						type="submit"
 						value="Next Recording"
 						_="on click
 							if $step is 3
-								go to -account
+								go to url http://localhost:2323/user/onboardingSuccess
 							else
 								set $step to $step + 1
-								put 'Record yourself saying the following sentence ' + $step + '/3' into #stepHeader"
+								put 'Record yourself saying the following sentence ' + $step + '/3' into #stepHeader
+								set $isRecording to false
+								remove .bg-green-600 from #nextButton
+								remove @disabled from #nextButton
+								remove @disabled from #recordButton
+								add .bg-red-600 to #recordButton
+								add .hover:bg-red-500 to #recordButton
+								put 'Mic' into .material-icons in #recordButton
+								add .hidden to #restartButton1
+								add @disabled to me
+							if $step is 3
+									put 'Evaluate' into @value of me"
 					/>
 				</div>
 			</div>
