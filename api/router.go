@@ -91,9 +91,12 @@ func (r *Router) RegisterRoutes() {
 	// view
 	r.echo.GET("/user", m.ViewAuthMiddleware(userView.HandleUser))
 
-	r.echo.GET("/onboardingStart", m.ViewAuthMiddleware(userView.HandleOnboardingStart))
-	r.echo.GET("/onboardingRecording", m.ViewAuthMiddleware(userView.HandleOnboardingRecording))
-	r.echo.GET("/onboardingSuccess", m.ViewAuthMiddleware(userView.HandleOnboardingSuccess))
+	r.echo.GET("/user/onboardingStart", m.ViewAuthMiddleware(userView.HandleOnboardingStart))
+	r.echo.GET("/user/onboardingRecording", m.ViewAuthMiddleware(userView.HandleOnboardingRecording))
+	r.echo.GET("/user/onboardingSuccess", m.ViewAuthMiddleware(userView.HandleOnboardingSuccess))
+
+	// api
+	r.echo.POST("/user/createRefernceRecording/:step", userView.HandleCreateReferenceRecording)
 
 	r.echo.RouteNotFound("/*", handler.HandleNotFound)
 

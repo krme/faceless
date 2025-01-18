@@ -2,9 +2,12 @@ package user
 
 import (
 	"ht/helper"
+	"ht/model"
 	"ht/server/database"
 	"log"
 	"os"
+
+	"github.com/labstack/echo/v4"
 )
 
 type UserService struct {
@@ -39,4 +42,27 @@ func NewUserService() *UserService {
 	}
 
 	return newUserService
+}
+
+func (r *UserService) CreateReferenceRecording(c echo.Context) (*model.User, error) {
+	r.logger.Println("creating recording")
+
+	userRid := helper.GetCurrentUserRID(c.Request().Context())
+
+	user, err := r.userDb.SelectUser(userRid)
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO get recording from request body
+	// if step == "1" {
+	// 	user.Recording1 = recording
+	//}
+
+	data, err := r.userDb.UpdateUser(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
