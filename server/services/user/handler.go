@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/antonlindstrom/pgstore"
-	"github.com/google/uuid"
 )
 
 type UserService struct {
@@ -31,7 +30,7 @@ func NewUserService(sessionStore *pgstore.PGStore) *UserService {
 	var userDb UserDBHandlerFunctions = newUserDBHandler(dbConnection)
 
 	// creates main user table
-	err := userDb.CreateTable(uuid.UUID{})
+	err := userDb.CreateTable()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
