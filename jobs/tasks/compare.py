@@ -1,9 +1,9 @@
 import numpy as np
 import librosa
 
-def extract_features(file_path): 
+def extract_features(y, sr): 
     # Load the audio file 
-    y, sr = librosa.load(file_path, sr=None) 
+    # y, sr = librosa.load(file_path, sr=None) 
      
     # Extract MFCCs s
     mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40) 
@@ -14,7 +14,7 @@ def extract_features(file_path):
     return mfccs_mean 
 
 
-def preprocess_recording(recording):
-    recording = librosa.effects.trim()
+def preprocess_recording(y, sr):
+    recording = librosa.effects.trim(y)
 
-    return recording
+    return recording, sr

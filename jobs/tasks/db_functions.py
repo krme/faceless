@@ -5,6 +5,14 @@ import asyncpg
 import ssl
 from prefect import task, get_run_logger
 from uuid import UUID
+import librosa
+
+
+def convert_blob_to_librosa(blob):
+    with open('file.ogg', 'ab') as f:
+        f.write(blob)
+        y, sr = librosa.load(f, sr=None) 
+    return y, sr
 
 
 class DBConfig(BaseModel):
@@ -74,6 +82,7 @@ async def get_user(db_config: DBConfig, rid: UUID):
 
         query = "SELECT id, rid, recording_1, recording_2, recording_3 FROM DB.user WHERE rid = $1;"
         query_result = await conn.fetch(query, rid)
+        # add convert_blob_to_librosa
         recordings.append(recordings.from_json_map(query_result))
 
     except Exception as e:
@@ -100,6 +109,7 @@ async def get_latest_identification_attempt(db_config: DBConfig, rid: UUID):
         recordings.append(recordings.from_json_map(query_result))
         # extract binary file from json
         # reconstruct adio file from binary
+        # add convert_blob_to_librosa
 
 
     except Exception as e:
