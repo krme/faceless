@@ -750,39 +750,73 @@ select {
 }
 
 @font-face {
-  font-family: 'Montserrat';
+  font-family: 'Oxanium';
 
-  font-style: normal;
-
-  font-weight: 400;
+  font-weight: 200;
 
   font-display: swap;
 
-  src: url(/static/fonts/Montserrat.ttf) format('truetype');
+  src: url(/static/fonts/Oxanium-ExtraLight.ttf) format('truetype');
 }
 
 @font-face {
-  font-family: 'Montserrat';
+  font-family: 'Oxanium';
 
-  font-style: italic;
-
-  font-weight: 400;
+  font-weight: 300;
 
   font-display: swap;
 
-  src: url(../fonts/Montserrat-italic.ttf) format('truetype');
+  src: url(/static/fonts/Oxanium-Light.ttf) format('truetype');
 }
 
 @font-face {
-  font-family: 'Quicksand';
-
-  font-style: normal;
+  font-family: 'Oxanium';
 
   font-weight: 400;
 
   font-display: swap;
 
-  src: url(../fonts/Quicksand.ttf) format('truetype');
+  src: url(/static/fonts/Oxanium-Regular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Oxanium';
+
+  font-weight: 500;
+
+  font-display: swap;
+
+  src: url(/static/fonts/Oxanium-Medium.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Oxanium';
+
+  font-weight: 600;
+
+  font-display: swap;
+
+  src: url(/static/fonts/Oxanium-SemiBold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Oxanium';
+
+  font-weight: 700;
+
+  font-display: swap;
+
+  src: url(/static/fonts/Oxanium-Bold.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Oxanium';
+
+  font-weight: 800;
+
+  font-display: swap;
+
+  src: url(/static/fonts/Oxanium-Extra.ttf) format('truetype');
 }
 
 @font-face {
@@ -812,7 +846,6 @@ select {
 }
 
 h1, h2, h3, h4 {
-  font-family: Montserrat, sans-serif;
   line-height: 2;
   letter-spacing: 0.025em;
   --tw-text-opacity: 1;

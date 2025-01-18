@@ -8,25 +8,46 @@
 
 @layer base {
     @font-face {
-        font-family: 'Montserrat';
-        font-style: normal;
-        font-weight: 400;
+        font-family: 'Oxanium';
+        font-weight: 200;
         font-display: swap;
-        src: url(/static/fonts/Montserrat.ttf) format('truetype');
+        src: url(/static/fonts/Oxanium-ExtraLight.ttf) format('truetype');
     }
     @font-face {
-        font-family: 'Montserrat';
-        font-style: italic;
-        font-weight: 400;
+        font-family: 'Oxanium';
+        font-weight: 300;
         font-display: swap;
-        src: url(../fonts/Montserrat-italic.ttf) format('truetype');
+        src: url(/static/fonts/Oxanium-Light.ttf) format('truetype');
     }
     @font-face {
-        font-family: 'Quicksand';
-        font-style: normal;
+        font-family: 'Oxanium';
         font-weight: 400;
         font-display: swap;
-        src: url(../fonts/Quicksand.ttf) format('truetype');
+        src: url(/static/fonts/Oxanium-Regular.ttf) format('truetype');
+    }
+    @font-face {
+        font-family: 'Oxanium';
+        font-weight: 500;
+        font-display: swap;
+        src: url(/static/fonts/Oxanium-Medium.ttf) format('truetype');
+    }
+    @font-face {
+        font-family: 'Oxanium';
+        font-weight: 600;
+        font-display: swap;
+        src: url(/static/fonts/Oxanium-SemiBold.ttf) format('truetype');
+    }
+    @font-face {
+        font-family: 'Oxanium';
+        font-weight: 700;
+        font-display: swap;
+        src: url(/static/fonts/Oxanium-Bold.ttf) format('truetype');
+    }
+    @font-face {
+        font-family: 'Oxanium';
+        font-weight: 800;
+        font-display: swap;
+        src: url(/static/fonts/Oxanium-Extra.ttf) format('truetype');
     }
     @font-face {
         font-family: 'MaterialIcons';
@@ -50,7 +71,7 @@
     }
 
     h1, h2, h3, h4 {
-        @apply font-montserrat tracking-wide text-gray-900 dark:text-gray-100 sm:tracking-tight leading-loose;
+        @apply tracking-wide text-gray-900 dark:text-gray-100 sm:tracking-tight leading-loose;
     }
     h1 {
         @apply text-2xl font-black select-none;
