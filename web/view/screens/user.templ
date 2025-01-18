@@ -142,10 +142,10 @@ templ OnboardingStart() {
 					</div>
 					<div class="text-zinc-500 text-sm font-normal leading-tight">The last time you’ll have to do this. We promise.</div>
 				</div>
-				<div class="h-9 flex-col justify-start items-center gap-6 flex w-full">
-					<div class="self-stretch h-9 flex-col justify-start items-center gap-2 flex w-full">
-						<a class="self-stretch h-9 px-4 py-2  rounded-md shadow-sm justify-center items-center gap-1 inline-flex button_primary cursor-pointer" href="/user/onboardingRecording">
-							<div class="text-[#F9F9F9] text-sm font-medium leading-tight">Go to</div>
+				<div class="h-9 flex-col justify-center items-center gap-6 flex w-full place-self-center">
+					<div class=" h-9 flex-col justify-center items-center gap-2 flex w-56 place-self-center">
+						<a class="self-stretch h-9 px-4 py-2  rounded-md shadow-sm justify-center items-center gap-1 inline-flex button_primary cursor-pointer place-self-center" href="/user/onboardingRecording">
+							<div class="text-[#F9F9F9] font-bold">Go to</div>
 							// <img class="w-[21px] h-[21px] rounded-[3px] border border-black/20" src="https://via.placeholder.com/21x21"/>
 						</a>
 					</div>
@@ -275,6 +275,7 @@ templ RecordSentence(sentence string) {
 										add .bg-green-600 to me
 										add @disabled to me
 										put 'check' into .material-icons in me
+										remove .hidden from #sparkle
 									end"
 							>
 								<span class="material-icons black text-xxl">mic</span>
@@ -304,9 +305,11 @@ templ RecordSentence(sentence string) {
 								put 'Mic' into .material-icons in #recordButton
 								add .hidden to #restartButton1
 								add @disabled to me
+								add .hidden to #sparkle
 							if $step is 3
 									put 'Evaluate' into @value of me"
 					/>
+					<p class="text-indigo-500 hidden" id="sparkle">✨ Successfully recorded!</p>
 				</div>
 			</div>
 		</div>

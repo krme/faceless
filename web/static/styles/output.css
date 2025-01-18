@@ -3183,6 +3183,10 @@ input {
   border-bottom-width: calc(1px * var(--tw-divide-y-reverse)) !important;
 }
 
+.place-self-center {
+  place-self: center !important;
+}
+
 .self-stretch {
   align-self: stretch !important;
 }
@@ -4843,6 +4847,11 @@ input {
 .text-zinc-500 {
   --tw-text-opacity: 1 !important;
   color: rgb(113 113 122 / var(--tw-text-opacity, 1)) !important;
+}
+
+.text-indigo-500 {
+  --tw-text-opacity: 1 !important;
+  color: rgb(99 102 241 / var(--tw-text-opacity, 1)) !important;
 }
 
 .underline {
