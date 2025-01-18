@@ -86,8 +86,8 @@ func (r UserDBHandler) InsertUser(user *model.User) (*model.User, error) {
 	newUser := &model.User{}
 
 	row := r.db.Instance.QueryRow(
-		`INSERT INTO user ( rid )
-			VALUES ($1)
+		`INSERT INTO user ( id, rid, recording_1, recording_2, recording_3, recording_1_normalised, recording_2_normalised, recording_3_normalised, recording_1_mfcc, recording_2_mfcc, recording_3_mfcc )
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 		RETURNING
 			id,
 			rid,
@@ -135,11 +135,17 @@ func (r UserDBHandler) UpdateUser(user *model.User) (*model.User, error) {
 			"user"
 		SET
 			recording_1 = $1,
-			recording_2 = $2,
-			recording_3 = $3,
+            recording_2 = $2,
+            recording_3 = $3,
+			recording_1_normalised = $4,
+			recording_2_normalised = $5,
+			recording_3_normalised = $6,
+			recording_1_mfcc = $7,
+			recording_2_mfcc = $8,
+			recording_3_mfcc = $9,
 			updated_at = CURRENT_TIMESTAMP
 		WHERE
-			rid = $4
+			rid = $10
 		RETURNING
 			id,
 			rid,
@@ -157,6 +163,12 @@ func (r UserDBHandler) UpdateUser(user *model.User) (*model.User, error) {
 		user.Recording1,
 		user.Recording2,
 		user.Recording3,
+		user.Recording1Normalised,
+		user.Recording2Normalised,
+		user.Recording3Normalised,
+		user.Recording1Mfcc,
+		user.Recording2Mfcc,
+		user.Recording3Mfcc,
 		user.RID,
 	)
 
