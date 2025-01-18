@@ -1,5 +1,3 @@
-import numpy as np 
-import librosa 
 from jobs.tasks.db_functions import get_user, init_db, update_user, close_db, get_latest_identification_attempt, get_vector_dist, update_latest_identification
 from jobs.tasks.compare import preprocess_recording, extract_features
 import datetime
