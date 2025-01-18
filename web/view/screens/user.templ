@@ -194,7 +194,7 @@ templ OnboardingRecording(user *model.User, step int) {
 				</div>
 			</div>
 		</div>
-		@RecordSentence("hello", 1)
+		@RecordSentence("A sentient toaster serenaded the moon in Morse code.")
 	}
 }
 
@@ -214,18 +214,39 @@ templ OnboardingSuccess() {
 	}
 }
 
-templ RecordSentence(sentence string, step int) {
-	<div class="card">
-		<div class="w-full flex-row lg:flex lg:items-center lg:justify-between mb-8">
+templ RecordSentence(sentence string) {
+	<div
+		class="flex flex-col card items-center justify-center bg-[#F0F5EE]"
+		_="init 
+			set $step to 1
+			put 'Record yourself saying the following sentence ' + $step + '/3' into #stepHeader"
+	>
+		<div class="w-full flex-row lg:flex lg:items-center lg:justify-between mb-2">
 			<div class="min-w-0 flex-1">
-				<div class="flex flex-col  gap-4">
-					<h1>{ `Record yourself saying the following sentence ({step}/3)` }</h1>
-					// TODO: add select state feature (if selected ) - check
-					//TODO: add recording feature 
-					//TODO: Add logic for sending requests to server - where are the endpoints?
-					<div class="flex flex-row items-center justify-between gap-4 bg-indingo-500">
-						<span class="text-gray-600">{ sentence }</span>
-						<div class="flex gap-2">
+				<div class="flex flex-col items-center justify-center">
+					<h1 id="stepHeader"></h1>
+					<span class="text-gray-600">"{ sentence }"</span>
+					<!-- TODO: add select state feature (if selected ) - check -->
+					<!-- TODO: add recording feature -->
+					<!-- TODO: Add logic for sending requests to server - where are the endpoints? -->
+					<div class="flex gap-4 w-full">
+						<div class="flex gap-2 my-5">
+							<button
+								id="restartButton1"
+								type="button"
+								class="items-center p-2 rounded-full hover:bg-slate-300 hidden"
+								_="on click
+									hide me
+									set $isRecording to false
+									remove .bg-green-600 from next <button/>
+									remove @disabled from next <button/>
+									add .bg-red-600 to next <button/>
+									add .hover:bg-red-500 to next <button/>
+									put 'Mic' into .material-icons in next <button/>
+									add .hidden to me"
+							>
+								<span class="material-icons black text-xxl">restart_alt</span>
+							</button>
 							<button
 								type="button"
 								class="inline-flex items-center p-2 rounded-full bg-red-600 hover:bg-red-500"
@@ -238,8 +259,8 @@ templ RecordSentence(sentence string, step int) {
 										add .bg-red-600 to me
 										add .hover:bg-red-500 to me
 										put 'stop' into .material-icons in me
-										remove .hidden from next <button/>
-										add .inline-flex to next <button/>
+										remove .hidden from previous <button/>
+										add .inline-flex to previous <button/>
 									else
 										set $isRecording to false
 										remove .bg-red-600 from me
@@ -252,7 +273,7 @@ templ RecordSentence(sentence string, step int) {
 								<span class="material-icons black text-xxl">mic</span>
 							</button>
 							<button
-								id="restartButton"
+								id="restartButton2"
 								type="button"
 								class="items-center p-2 rounded-full hover:bg-slate-300 hidden"
 								_="on click
@@ -268,7 +289,21 @@ templ RecordSentence(sentence string, step int) {
 								<span class="material-icons black text-xxl">restart_alt</span>
 							</button>
 						</div>
+						<div class="flex flex-col items-center justify-center w-full">
+							<div class="w-full border-t border_primary my-5"></div>
+						</div>
 					</div>
+					<input
+						class="w-fit button_primary text-white font-bold p-2 my-2 rounded-lg cursor-pointer"
+						type="submit"
+						value="Next Recording"
+						_="on click
+							if $step is 3
+								go to -account
+							else
+								set $step to $step + 1
+								put 'Record yourself saying the following sentence ' + $step + '/3' into #stepHeader"
+					/>
 				</div>
 			</div>
 		</div>
