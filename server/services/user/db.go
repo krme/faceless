@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/lib/pq"
 )
 
 type UserDBHandlerFunctions interface {
@@ -34,17 +33,26 @@ func (r UserDBHandler) CreateTable() error {
 
 	_, err := r.db.Instance.ExecContext(
 		ctx,
-		`CREATE EXTENSION IF NOT EXISTS pgcrypto;
-		CREATE TABLE IF NOT EXISTS user (
-			id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-			rid UUID UNIQUE NOT NULL,
-			recording_1 ARRAY DEFAULT '[]'::ARRAY,
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-		)`,
+		`CREATE EXTENSION IF NOT EXISTS vector;
+        
+        CREATE TABLE IF NOT EXISTS "user" (
+            id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+            rid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
+            recording_1 BYTEA,
+            recording_2 BYTEA,
+            recording_3 BYTEA,
+			recording_1_normalised BYTEA,
+            recording_2_normalised BYTEA,
+            recording_3_normalised BYTEA,
+			recording_1_mfcc VECTOR(40),
+            recording_2_mfcc VECTOR(40),
+            recording_3_mfcc VECTOR(40),
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );`,
 	)
 	if err != nil {
-		return fmt.Errorf("error creating user table: %#v", err)
+		return fmt.Errorf("error creating user table: %v", err)
 	}
 
 	err = r.db.CreateIndex("user", "rid")
@@ -74,10 +82,10 @@ func (r UserDBHandler) InsertUser(user *model.User) (*model.User, error) {
 	newData := &model.User{}
 
 	row := r.db.Instance.QueryRow(
-		`INSERT INTO user ( TODO add columns )
-			VALUES ($1, $2, $3, $4, $5)
+		`INSERT INTO user ( rid )
+			VALUES ($1)
 		RETURNING
-			id, rid, TODO add columns, created_at, updated_at`,
+			id, rid, created_at, updated_at`,
 		user.RID,
 	)
 
@@ -98,31 +106,26 @@ func (r UserDBHandler) InsertUser(user *model.User) (*model.User, error) {
 func (r UserDBHandler) UpdateUser(user *model.User) error {
 	_, err := r.db.Instance.Exec(
 		`UPDATE
-			user
-		SET
-			owner_rid = $1,
-			parent_id = NULLIF ($2, 0),
-			parent_rid = $3,
-			parent_column = $4,
-			details = $5,
-			updated_at = CURRENT_TIMESTAMP
-		WHERE
-			rid = $6`,
-		user.OwnerRID,
-		user.ParentID,
-		user.ParentRID,
-		user.ParentColumn,
-		user.Details,
+            "user"
+        SET
+            recording_1 = $1,
+            recording_2 = $2,
+            recording_3 = $3,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE
+            rid = $4`,
+		user.Recording1,
+		user.Recording2,
+		user.Recording3,
 		user.RID,
 	)
 
 	return err
 }
 
-func (r DataDBHandler) DeleteData(projectRid uuid.UUID, datamodelRid uuid.UUID, rid uuid.UUID) error {
-	tableNameQuoted := pq.QuoteIdentifier(r.tableNameByProjectRidAndDatamodelRid(projectRid, datamodelRid))
+func (r UserDBHandler) DeleteData(projectRid uuid.UUID, datamodelRid uuid.UUID, rid uuid.UUID) error {
 	_, err := r.db.Instance.Exec(
-		`DELETE FROM `+tableNameQuoted+`
+		`DELETE FROM "user"
 		WHERE rid = $1`,
 		rid,
 	)
@@ -133,7 +136,7 @@ func (r DataDBHandler) DeleteData(projectRid uuid.UUID, datamodelRid uuid.UUID, 
 	return nil
 }
 
-func (r UserDBHandler) SelectData(projectRid uuid.UUID, datamodelRid uuid.UUID, rid uuid.UUID) (*model.Data, error) {
+func (r UserDBHandler) SelectData(projectRid uuid.UUID, datamodelRid uuid.UUID, rid uuid.UUID) (*model.User, error) {
 	data := &model.User{}
 
 	row := r.db.Instance.QueryRow(
@@ -144,7 +147,7 @@ func (r UserDBHandler) SelectData(projectRid uuid.UUID, datamodelRid uuid.UUID, 
 			created_at,
 			updated_at
 		FROM
-			user
+			"user"
 		WHERE
 			rid = $1`,
 		rid,
@@ -163,10 +166,9 @@ func (r UserDBHandler) SelectData(projectRid uuid.UUID, datamodelRid uuid.UUID, 
 	return data, nil
 }
 
-func (r DataDBHandler) SelectAllData(projectRid uuid.UUID, datamodelRid uuid.UUID, lastId int, entries int) ([]*model.Data, error) {
-	var datas []*model.Data
+func (r UserDBHandler) SelectAllData(projectRid uuid.UUID, datamodelRid uuid.UUID, lastId int, entries int) ([]*model.User, error) {
+	var datas []*model.User
 
-	tableNameQuoted := pq.QuoteIdentifier(r.tableNameByProjectRidAndDatamodelRid(projectRid, datamodelRid))
 	rows, err := r.db.Instance.Query(
 		`SELECT
 			id,
@@ -179,15 +181,15 @@ func (r DataDBHandler) SelectAllData(projectRid uuid.UUID, datamodelRid uuid.UUI
 			created_at,
 			updated_at
 		FROM
-			`+tableNameQuoted+`
+			"user"
 		WHERE (0 = $1
 			OR created_at < (
 				SELECT
-					d.created_at
+					u.created_at
 				FROM
-					`+tableNameQuoted+` AS d
+					"user" AS u
 				WHERE
-					d.id = $1))
+					u.id = $1))
 		ORDER BY
 			created_at DESC
 		LIMIT $2`,
@@ -195,26 +197,29 @@ func (r DataDBHandler) SelectAllData(projectRid uuid.UUID, datamodelRid uuid.UUI
 		entries,
 	)
 	if err != nil {
-		return []*model.Data{}, err
+		return []*model.User{}, err
 	}
 
 	defer rows.Close()
 
 	for rows.Next() {
-		data := &model.Data{}
+		data := &model.User{}
 		err := rows.Scan(
-			&data.ID,
 			&data.RID,
-			&data.OwnerRID,
-			&data.ParentID,
-			&data.ParentRID,
-			&data.ParentColumn,
-			&data.Details,
+			&data.Recording1,
+			&data.Recording2,
+			&data.Recording3,
+			&data.Recording1Normalised,
+			&data.Recording2Normalised,
+			&data.Recording3Normalised,
+			&data.Recording1Mfcc,
+			&data.Recording2Mfcc,
+			&data.Recording3Mfcc,
 			&data.CreatedAt,
 			&data.UpdatedAt,
 		)
 		if err != nil {
-			return []*model.Data{}, err
+			return []*model.User{}, err
 		}
 
 		datas = append(datas, data)
@@ -223,8 +228,8 @@ func (r DataDBHandler) SelectAllData(projectRid uuid.UUID, datamodelRid uuid.UUI
 	return datas, nil
 }
 
-func (r DataDBHandler) SelectAllDataBySearch(projectRid uuid.UUID, datamodelRid uuid.UUID, search string, lastId int, entries int) ([]*model.Data, error) {
-	var datas []*model.Data
+func (r UserDBHandler) SelectAllDataBySearch(projectRid uuid.UUID, datamodelRid uuid.UUID, search string, lastId int, entries int) ([]*model.User, error) {
+	var datas []*model.User
 
 	log.Printf("search: %v", search)
 
@@ -239,7 +244,7 @@ func (r DataDBHandler) SelectAllDataBySearch(projectRid uuid.UUID, datamodelRid 
 			details,
 			created_at,
 			updated_at
-		FROM user 
+		FROM "user" 
 		WHERE (key ILIKE '%' || $1 || '%'
 				OR name ILIKE '%' || $1 || '%'
 				OR description ILIKE '%' || $1 || '%')
@@ -248,7 +253,7 @@ func (r DataDBHandler) SelectAllDataBySearch(projectRid uuid.UUID, datamodelRid 
 					SELECT
 						u.created_at
 					FROM
-						user AS u
+						"user" AS u
 					WHERE
 						u._id = $2))
 		ORDER BY
@@ -259,26 +264,29 @@ func (r DataDBHandler) SelectAllDataBySearch(projectRid uuid.UUID, datamodelRid 
 		entries,
 	)
 	if err != nil {
-		return []*model.Data{}, err
+		return []*model.User{}, err
 	}
 
 	defer rows.Close()
 
 	for rows.Next() {
-		data := &model.Data{}
+		data := &model.User{}
 		err := rows.Scan(
-			&data.ID,
 			&data.RID,
-			&data.OwnerRID,
-			&data.ParentID,
-			&data.ParentRID,
-			&data.ParentColumn,
-			&data.Details,
+			&data.Recording1,
+			&data.Recording2,
+			&data.Recording3,
+			&data.Recording1Normalised,
+			&data.Recording2Normalised,
+			&data.Recording3Normalised,
+			&data.Recording1Mfcc,
+			&data.Recording2Mfcc,
+			&data.Recording3Mfcc,
 			&data.CreatedAt,
 			&data.UpdatedAt,
 		)
 		if err != nil {
-			return []*model.Data{}, err
+			return []*model.User{}, err
 		}
 
 		datas = append(datas, data)
