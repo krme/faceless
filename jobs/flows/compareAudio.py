@@ -1,6 +1,21 @@
 import numpy as np 
 import librosa 
+from jobs.tasks.db_functions import get_user, init_db, update_user, close_db
+from jobs.tasks.compare import preprocess_recording
 # from sklearn.metrics import pairwise 
+
+
+def register_user(uid):
+    conn = init_db()
+    recordings = get_user(conn, uid)
+
+    preprocessed_recordings = []
+    for recording in recordings:
+        preprocessed_recordings.append(preprocess_recording(recording))
+    
+    update_user(conn, uid, preprocessed_recordings)
+    close_db(conn)
+
  
 def extract_features(file_path): 
     # Load the audio file 
@@ -44,3 +59,19 @@ if distance < threshold:
     print("The same person is likely speaking in both audio files.") 
 else: 
     print("The speakers are likely different.") 
+
+
+
+
+def get_user():
+    pass
+
+def update_user():
+    pass
+
+def get_latest_identification_attempt():
+    pass
+
+def update_latest_identification_attempt():
+    pass
+
