@@ -846,6 +846,7 @@ select {
 }
 
 h1, h2, h3, h4 {
+  font-family: Oxanium, sans-serif;
   line-height: 2;
   letter-spacing: 0.025em;
   --tw-text-opacity: 1;
@@ -1076,8 +1077,8 @@ input {
 
 .input_focus:focus {
   border-width: 2px;
-  --tw-border-opacity: 1;
-  border-color: rgb(99 102 241 / var(--tw-border-opacity, 1));
+  --tw-bg-opacity: 1;
+  background-color: rgb(19 13 29 / var(--tw-bg-opacity, 1));
   outline: 2px solid transparent;
   outline-offset: 2px;
 }
@@ -1128,7 +1129,7 @@ input {
 
 .button_primary {
   --tw-bg-opacity: 1;
-  background-color: rgb(67 56 202 / var(--tw-bg-opacity, 1));
+  background-color: rgb(19 13 29 / var(--tw-bg-opacity, 1));
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
   --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -4766,6 +4767,11 @@ input {
   letter-spacing: -0.025em !important;
 }
 
+.text-\[\#130D1D\] {
+  --tw-text-opacity: 1 !important;
+  color: rgb(19 13 29 / var(--tw-text-opacity, 1)) !important;
+}
+
 .text-\[\#F0F5EE\] {
   --tw-text-opacity: 1 !important;
   color: rgb(240 245 238 / var(--tw-text-opacity, 1)) !important;
@@ -4882,6 +4888,11 @@ input {
 .hover\:bg-slate-300:hover {
   --tw-bg-opacity: 1 !important;
   background-color: rgb(203 213 225 / var(--tw-bg-opacity, 1)) !important;
+}
+
+.hover\:text-\[\#2f2047\]:hover {
+  --tw-text-opacity: 1 !important;
+  color: rgb(47 32 71 / var(--tw-text-opacity, 1)) !important;
 }
 
 .hover\:text-gray-900:hover {
