@@ -1,0 +1,20 @@
+package components
+
+import "ht/model"
+
+templ Detailslist(details []model.KeyValuePair) {
+	<div class="flow-root">
+		<dl class="-my-3 divide-y divider_secondary">
+			for _, d := range details {
+				@DetailslistItem(d.Key, d.Value)
+			}
+		</dl>
+	</div>
+}
+
+templ DetailslistItem(title string, value string) {
+	<div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
+		<dt class="bodytext_bold text-sm">{ title }</dt>
+		<dd class="bodytext sm:col-span-2 text-sm whitespace-pre-wrap">{ value }</dd>
+	</div>
+}

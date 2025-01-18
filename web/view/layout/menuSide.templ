@@ -1,0 +1,140 @@
+package layout
+
+import "ht/web/view/components"
+
+templ MenuWrapper() {
+	<input type="checkbox" name="navigation" id="navigation" class="hidden peer"/>
+	<label for="navigation" class="fixed bottom-4 left-3 z-40 size-10 justify-center base_button_lg button_primary lg:hidden inline-flex peer-checked:hidden">
+		<span class="material-icons">menu</span>
+	</label>
+	<label for="navigation" class="fixed bottom-4 left-3 z-40 size-10 justify-center base_button_lg button_primary lg:hidden hidden peer-checked:inline-flex">
+		<span class="material-icons">close</span>
+	</label>
+	<div class="absolute z-20 top-0 left-0 h-auto hidden peer-checked:block lg:relative lg:block">
+		<nav class="fixed md:sticky lg:sticky top-0 flex flex-row h-screen overflow-scroll">
+			{ children... }
+		</nav>
+	</div>
+}
+
+templ MenuSideButton(title string, materialIcon string, href string) {
+	<li>
+		<a
+			href={ templ.SafeURL(href) }
+			class="group relative w-12 flex justify-center base_button_lg button_hover_primary"
+			hx-indicator="#body-loading"
+			data-loading-disable
+			data-loading-states
+		>
+			<span class="material-icons">{ materialIcon }</span>
+			<span
+				class="invisible z-50 absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-800 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
+			>
+				{ title }
+			</span>
+		</a>
+	</li>
+}
+
+templ MenuSideSecondary(title string, href string) {
+	<div id="sidemenuSecondary" class="flex flex-col h-screen justify-between background_primary select-none">
+		<ul class="px-4 py-6 space-y-1">
+			<li>
+				<button
+					hx-push-url={ href }
+					class="rounded-lg bg-gray-100 px-4 py-2 w-full text-sm font-bold text-gray-700"
+					hx-indicator="#body-loading"
+					data-loading-disable
+				>
+					{ title }
+				</button>
+			</li>
+			{ children... }
+		</ul>
+	</div>
+}
+
+templ MenuSideSecondaryButton(title string, href string) {
+	<li>
+		<a
+			href={ templ.SafeURL(href) }
+			class="base_button_lg button_hover_primary w-full justify-start"
+		>
+			{ title }
+		</a>
+	</li>
+}
+
+templ MenuSideSecondaryButtonReplaceBody(title string, href string, article string) {
+	<li>
+		<button
+			hx-get={ article }
+			hx-indicator="#body-loading"
+			class="base_button_lg button_hover_primary w-full justify-start text-left"
+			data-loading-disable
+		>
+			{ title }
+		</button>
+	</li>
+}
+
+templ MenuSideSecondaryDropdown(title string, open bool) {
+	<li>
+		<details class="group [&_summary::-webkit-details-marker]:hidden" open?={ open }>
+			<summary
+				class="relative flex cursor-pointer justify-between base_button_lg button_hover_primary default_size_base_button"
+			>
+				<span class="text-sm font-semibold">{ title }</span>
+				<span class={ "shrink-0 material-icons transition duration-300 group-open:-rotate-180" }>expand_more</span>
+			</summary>
+			<ul class="mt-2 space-y-1 px-4">
+				{ children... }
+			</ul>
+		</details>
+	</li>
+}
+
+templ DarkModeToggle() {
+	<li>
+		<button
+			id="toggle-dark-mode"
+			class="group relative w-12 flex justify-center base_button_lg button_outline"
+			_="on click 
+				if cookies.darkMode is 'true'
+					remove .dark from body
+					set cookies.darkMode to 'false'
+				else
+					add .dark to body
+					set cookies.darkMode to 'true'"
+		>
+			<span class="material-icons block dark:hidden">light_mode</span>
+			<span class="material-icons hidden dark:block">dark_mode</span>
+			<span
+				class="invisible z-50 absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-800 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
+			>
+				Toggle light/dark mode
+			</span>
+			<label class="sr-only" for="toggle-dark-mode"></label>
+		</button>
+	</li>
+}
+
+templ MenuSideLogoutButton() {
+	<li>
+		@components.Form(components.FormConf{HxPost: "/auth/logout"}) {
+			<button
+				id="logout"
+				type="submit"
+				class="group relative w-12 flex justify-center text-red-400 mt-4 base_button_lg button_hover_primary"
+			>
+				<span class="material-icons">logout</span>
+				<span
+					class="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-800 px-2 py-1.5 text-xs font-medium text-white group-hover:visible"
+				>
+					Logout
+				</span>
+				<label class="sr-only" for="logout">Logout</label>
+			</button>
+		}
+	</li>
+}

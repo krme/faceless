@@ -1,0 +1,27 @@
+package layout
+
+import "ht/web/view"
+
+templ Navbar() {
+	<nav class="w-full fixed bottom-0 z-50 flex justify-center bg-white">
+		<div class="flex flex-wrap p-2">
+			<div class="text-sm lg:flex-grow">
+				@NavbarButton("/home", "Home")
+				@NavbarButton("/docs", "Documentation")
+				@NavbarButton("/todos", "Console")
+			</div>
+		</div>
+	</nav>
+}
+
+templ NavbarButton(link string, name string) {
+	if view.GetCurrentUrl(ctx) == link {
+		<a href={ templ.URL(link) } class="block px-2 py-1 mt-4 lg:inline-block lg:mt-0 text-indigo-700 hover:text-indigo-500 mr-4 rounded-lg border-solid border border-indigo-700">
+			{ name }
+		</a>
+	} else {
+		<a href={ templ.URL(link) } class="block px-2 py-1 mt-4 lg:inline-block lg:mt-0 text-indigo-700 hover:text-indigo-500 rounded-lg mr-4">
+			{ name }
+		</a>
+	}
+}

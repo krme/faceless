@@ -1,0 +1,37 @@
+package screens
+
+import (
+	"ht/model"
+	"ht/web/view/components"
+	"ht/web/view/layout"
+)
+
+templ Account(data *model.Auth) {
+	@layout.Index("Account") {
+		<div class="max-w-full lg:w-[60vw]">
+			<div class="w-full flex-row lg:flex lg:items-center lg:justify-between mb-8">
+				<div class="min-w-0 flex-1">
+					<h1>Your account</h1>
+					<div class="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap">
+						@components.HeaderInfo(data.CreatedAt.Format("2006-01-02"), "event")
+						@components.HeaderInfo(data.UpdatedAt.Format("2006-01-02"), "edit_calendar")
+					</div>
+				</div>
+			</div>
+			<div class="card background_primary">
+				<div class="flow-root">
+					<dl class="-my-3 divide-y divider_secondary">
+						<div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
+							<dt class="bodytext_bold text-sm">Email</dt>
+							<dd class="bodytext sm:col-span-2 text-sm whitespace-pre-wrap">{ data.Email }</dd>
+						</div>
+						<div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
+							<dt class="bodytext_bold text-sm">Change password</dt>
+							<dd class="bodytext sm:col-span-2 text-sm whitespace-pre-wrap">*********</dd>
+						</div>
+					</dl>
+				</div>
+			</div>
+		</div>
+	}
+}

@@ -1,0 +1,47 @@
+package layout
+
+import (
+	"ht/web/view"
+	"ht/web/view/components"
+)
+
+templ Appbar() {
+	<nav class="w-screen fixed top-0 z-50 flex justify-center bg-white">
+		<div class="w-screen max-w-screen-xl flex flex-col items-center justify-between p-2 lg:flex-row">
+			@components.Logo()
+			<label for="menu" class="base_button_outline lg:hidden">
+				<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16"></path>
+				</svg>
+			</label>
+			<input type="checkbox" name="menu" id="menu" class="hidden peer"/>
+			<div class="flex-row justify-between flex-grow hidden peer-checked:block lg:flex">
+				<div class="text-sm lg:flex-grow">
+					@AppbarButton("/home", "Home")
+					@AppbarButton("/docs", "Documentation")
+					@AppbarButton("/todos", "Console")
+				</div>
+				<div>
+					<a
+						href="/login"
+						class="inline-block leading-none mt-4 lg:mt-0 base_button_outline"
+					>
+						Login
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+}
+
+templ AppbarButton(link string, name string) {
+	if view.GetCurrentUrl(ctx) == link {
+		<a href={ templ.URL(link) } class="block mt-4 lg:inline-block lg:mt-0 mr-4 base_button">
+			{ name }
+		</a>
+	} else {
+		<a href={ templ.URL(link) } class="block mt-4 lg:inline-block lg:mt-0 mr-4 base_button_bright">
+			{ name }
+		</a>
+	}
+}

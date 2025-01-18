@@ -1,0 +1,147 @@
+package screens
+
+import (
+	"ht/web/view/components"
+	"ht/web/view/layout"
+)
+
+templ CenterCard(title string, hxPost string) {
+	<div class="w-full min-h-screen flex items-center justify-center">
+		<div class="flex flex-col">
+			@components.Form(components.FormConf{HxPost: hxPost, Class: "w-96 card background_primary mb-4"}) {
+				<h1 class="text-xl font-bold pb-4">
+					{ title }
+				</h1>
+				{ children... }
+			}
+			<p class="text-center text-white text-xs">
+				&copy;2024 Simon Herrmann. All rights reserved.
+			</p>
+		</div>
+	</div>
+}
+
+templ Register() {
+	@layout.Index("Register") {
+		@CenterCard("Register", "/auth/registerWithEmail") {
+			<div class="mb-4">
+				@components.InputText("Email", "Your email", "email", "email@example.com", "email", "")
+			</div>
+			<div class="mb-6">
+				@components.InputPassword("Password", "password", "password")
+			</div>
+			<input
+				class="w-full bg-indigo-700 hover:bg-indigo-500 text-white font-bold p-2 my-2 rounded-lg"
+				type="submit"
+				value="Register"
+			/>
+			<div class="flex flex-row justify-center">
+				<a class="inline-block align-baseline font-medium text-sm text-indigo-700 hover:text-indigo-500" href="/login">
+					Already registered?
+				</a>
+			</div>
+		}
+	}
+}
+
+templ VerifyEmail() {
+	@layout.Index("Verify email") {
+		@CenterCard("Verify email", "/auth/verifyEmail") {
+			<div class="mb-6">
+				@components.InputText("Your code", "You received a verification code in an email.", "text", "123456", "verification_code", "")
+				@components.Form(components.FormConf{HxPost: "/auth/requestNewEmailVerificationCode"}) {
+					<button type="submit" class="mt-2 inline-block align-baseline font-medium text-sm text-indigo-700 hover:text-indigo-500">
+						Resend code
+					</button>
+				}
+				<button
+					class="w-full bg-indigo-700 hover:bg-indigo-700 text-white font-bold p-2 my-2 rounded-lg"
+					type="submit"
+					value="Finish registration"
+				></button>
+				<div class="flex flex-row justify-center">
+					<a class="inline-block align-baseline font-medium text-sm text-indigo-700 hover:text-indigo-500" href="/login">
+						Back to login
+					</a>
+				</div>
+			</div>
+		}
+	}
+}
+
+templ Login() {
+	@layout.Index("Login") {
+		@CenterCard("Login", "/auth/loginWithEmail") {
+			<div class="mb-4">
+				@components.InputText("Email", "Your email", "email", "email@example.com", "email", "")
+			</div>
+			<div class="mb-6">
+				@components.InputPassword("Password", "password", "password")
+				<a class="mt-2 inline-block align-baseline font-medium text-sm text-indigo-700 hover:text-indigo-500 dark:text-indigo-500 hover:dark:text-indigo-400" href="/forgotPassword">
+					Forgot Password?
+				</a>
+			</div>
+			<input
+				class="w-full bg-indigo-700 hover:bg-indigo-700 text-white font-bold p-2 my-2 rounded-lg"
+				type="submit"
+				value="Login"
+			/>
+			<div class="flex flex-row justify-center">
+				<div class="text-sm font-medium text-gray-500 dark:text-gray-300">
+					Not registered? <a href="/register" class="text-indigo-700 hover:text-indigo-500 dark:text-indigo-500 hover:dark:text-indigo-400">Create account</a>
+				</div>
+			</div>
+			@components.DividerText("or login with")
+			<div class="flex flex-row gap-2">
+				@components.SigninGoogle()
+				@components.SigninApple()
+			</div>
+		}
+	}
+}
+
+templ ForgotPassword() {
+	@layout.Index("Forgot password") {
+		@CenterCard("Forgot password", "/auth/requestPasswordReset") {
+			<div class="mb-4">
+				@components.InputText("Your email", "Your account email.", "email", "email@example.com", "email", "")
+			</div>
+			<input
+				class="w-full bg-indigo-700 hover:bg-indigo-700 text-white font-bold p-2 my-2 rounded-lg"
+				type="submit"
+				value="Request password reset"
+			/>
+			<div class="flex flex-row justify-center">
+				<a class="inline-block align-baseline font-medium text-sm text-indigo-700 hover:text-indigo-500" href="/login">
+					Back to login
+				</a>
+			</div>
+		}
+	}
+}
+
+templ ResetPassword() {
+	@layout.Index("Reset passwosrd") {
+		@CenterCard("Reset password", "/auth/resetPassword") {
+			<div class="mb-4">
+				@components.InputText("Password reset code", "You received a reset code in an email.", "text", "123456", "verification_code", "")
+			</div>
+			<div class="mb-4">
+				@components.InputText("New password", "Your new password.", "password", "password", "new_password", "")
+			</div>
+			<div class="mb-6">
+				@components.InputText("Repeat new password", "Your new password.", "password", "password", "new_password_confirmed", "")
+			</div>
+			<input
+				class="w-full bg-indigo-700 hover:bg-indigo-700 text-white font-bold p-2 my-2 rounded-lg"
+				type="submit"
+				value="Reset password"
+			/>
+			<div class="flex flex-row justify-center">
+				<a class="inline-block align-baseline font-medium text-sm text-indigo-700 hover:text-indigo-500" href="/login">
+					Back to login
+				</a>
+			</div>
+		}
+	}
+}

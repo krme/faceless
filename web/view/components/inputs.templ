@@ -1,0 +1,431 @@
+package components
+
+import (
+	"fmt"
+	"ht/model"
+)
+
+templ InputText(title string, hint string, inputType string, example string, formName string, value string) {
+	<label for={ "input_text_" + formName } class="flex flex-row items-center justify-start gap-2 bodytext">
+		{ title }
+		if len(hint) > 0 {
+			@Tooltip(hint)
+		}
+	</label>
+	<input
+		type={ inputType }
+		id={ "input_text_" + formName }
+		name={ formName }
+		placeholder={ example }
+		value={ value }
+		class="mt-1 p-2 w-full input_border input_focus bodytext"
+		autofocus
+	/>
+}
+
+templ InputTextMultiline(title string, hint string, example string, formName string, value string) {
+	<label for={ "input_multiline_" + formName } class="flex flex-row items-center justify-start gap-2 bodytext">
+		{ title }
+		if len(hint) > 0 {
+			@Tooltip(hint)
+		}
+	</label>
+	<textarea
+		id={ "input_text_" + title }
+		name={ formName }
+		rows="4"
+		placeholder="Write your thoughts here..."
+		class="mt-1 p-2 w-full input_border input_focus bodytext"
+		autofocus
+	>{ value }</textarea>
+}
+
+templ InputPassword(title string, example string, formName string) {
+	<div class="relative w-full">
+		<label for={ "input_password_" + formName } class="flex flex-row items-center justify-start gap-2 bodytext">
+			{ title }
+			@Tooltip("Min length 8. Must contain a special character, a number, a capital letter and a small letter.")
+		</label>
+		<input
+			type="password"
+			id={ "input_password_" + title }
+			name={ formName }
+			placeholder={ example }
+			autocomplete="on"
+			autocomplete="password"
+			class="mt-1 p-2 input_border input_focus bodytext"
+			autofocus
+			_="on passwordVisibilityChanged
+					if my type is 'password'
+						set my type to 'text'
+					else
+						set my type to 'password'
+				end"
+		/>
+		<div class="absolute bottom-0 right-0 flex items-center mx-[0.3rem] my-[0.3rem]">
+			<label for="toggle" class="sr-only">Show password</label>
+			<div
+				class="w-8 h-7 flex flex-row justify-center items-center rounded-xl button_primary"
+				_="on click
+						toggle .hidden on <span[id^='show_password_']/> in me
+						toggle .hidden on <span[id^='hide_password_']/> in me
+						send passwordVisibilityChanged to previous <input[id^='input_password_']/>
+					end"
+			>
+				<span id={ "show_password_" + formName } class="material-icons text-sm">visibility</span>
+				<span id={ "hide_password_" + formName } class="material-icons text-sm hidden">visibility_off</span>
+			</div>
+		</div>
+	</div>
+}
+
+templ Select(title string, hint string, optionGroups [][]model.SelectOption, formName string, value string) {
+	<div>
+		<label for={ "select_" + formName } class="flex flex-row items-center justify-start gap-2 bodytext">
+			{ title }
+			if len(hint) > 0 {
+				@Tooltip(hint)
+			}
+		</label>
+		<select
+			id={ "select_" + formName }
+			name={ formName }
+			class="mt-1.5 input_border input_focus bodytext"
+			autofocus
+		>
+			<option value="">Please select</option>
+			for i, og := range optionGroups {
+				<optgroup
+					if i == 0 {
+						label="Default"
+					} else {
+						label="Custom"
+					}
+				>
+					for _, o := range og {
+						if o.Value == value {
+							<option value={ o.Value } selected>{ o.Name }</option>
+						} else {
+							<option value={ o.Value }>{ o.Name }</option>
+						}
+					}
+				</optgroup>
+			}
+		</select>
+	</div>
+}
+
+templ InputBool(title string, hint string, formName string, value string) {
+	<label
+		for={ "toggle_" + formName }
+		class="flex flex-row items-center justify-between cursor-pointer select-none bodytext rounded-lg has-[:focus]:ring-2 has-[:focus]:ring-indigo-500"
+	>
+		<div class="flex flex-row items-center justify-start gap-2">
+			{ title }
+			if len(hint) > 0 {
+				@Tooltip(hint)
+			}
+		</div>
+		<div class="relative">
+			<input
+				type="checkbox"
+				id={ "toggle_" + formName }
+				name={ formName }
+				class="peer sr-only"
+				autofocus
+			/>
+			<div
+				class="block h-7 w-12 rounded-full border border-gray-800 dark:border-white"
+			></div>
+			<div
+				class="absolute w-5 h-5 transition rounded-full dot left-1 top-1 background_primary_inverse peer-checked:translate-x-full peer-checked:bg-primary"
+			></div>
+		</div>
+	</label>
+}
+
+func inputCodeScript(maxRows int) string {
+	script := `
+			init
+				trigger reload
+			end
+			on input
+				trigger reload
+			end
+			on reload
+				set text to my.value
+				js(text)
+					return cleanText(text)
+				end
+				put it into (first <code/> in next <pre/>).innerHTML
+				then Prism.highlightAll()
+			on scroll
+				set (next <pre/>).scrollTop to my.scrollTop
+				set (next <pre/>).scrollLeft to my.scrollLeft
+			end`
+	if maxRows > 0 {
+		script += `
+			on keydown[key is 'Enter']
+				set text to my.value
+				log text
+				js(text)
+					return ((text.match(/\n/g) || []).length + 1) >= 1
+				end
+				if it halt the event
+			end`
+	}
+	if maxRows != 1 {
+		script += `
+			on keydown[key is 'Tab']
+				halt the event
+				set text to my.value
+				js(I, text, event)
+					let before_tab = text.slice(0, I.selectionStart)
+					let after_tab = text.slice(I.selectionEnd, I.value.length)
+					let cursor_pos = I.selectionStart + 1
+					I.value = before_tab + '\t' + after_tab
+					// move cursor
+					I.selectionStart = cursor_pos;
+					I.selectionEnd = cursor_pos;
+				end
+				trigger reload
+			end`
+	}
+	return script
+}
+
+templ InputCode(title string, hint string, example string, formName string, value string, language string, rows int, maxRows int) {
+	<label for={ "input_text_" + formName } class="flex flex-row items-center justify-start gap-2 bodytext">
+		{ title }
+		@Tooltip(hint)
+	</label>
+	<div class="relative w-full h-10 mt-1 input_border has-[:focus]:ring-2 has-[:focus]:ring-indigo-500">
+		<textarea
+			placeholder={ example }
+			id={ "input_text_" + formName }
+			name={ formName }
+			class="codeTextarea w-full min-h-min p-2 m-0 focus:ring-0"
+			spellcheck="false"
+			_={ inputCodeScript(maxRows) }
+			if rows != 0 {
+				rows={ fmt.Sprint(rows) }
+			}
+		>
+			if len(value) > 0 {
+				{ value }
+			}
+		</textarea>
+		<pre class={ "language-" + language + " line-numbers codePre w-full h-full p-2 m-0" } aria-hidden="true">
+			<code class="text_secondary"></code>
+		</pre>
+	</div>
+	<script>
+    function cleanText(text) {
+		if(text[text.length-1] == "\n") {
+			text += " ";
+		}
+        return text.replace(new RegExp("&", "g"), "&amp;").replace(new RegExp("<", "g"), "&lt;");
+    }
+	</script>
+}
+
+templ InputRequirements(title string, formName string, value string) {
+	// @InputText(title, "Requirements for data creation/update", "text", "eg. min1 max10", formName, value)
+	@InputCode(title, "Requirements for data creation/update", "eg. min10 max100", formName, value, "validator", 1, 1)
+}
+
+// templ InputRequirements(title string, formName string) {
+// 	<div class="block bodytext">{ title }</div>
+// 	<div
+// 		class="mt-1.5 overflow-hidden rounded-lg border border-gray-200 has-[:focus]:ring-2 has-[:focus]:ring-indigo-500"
+// 	>
+// 		<input type="checkbox" name={ formName + "_minmax" } id={ formName + "_minmax" } class="sr-only peer/minmax"/>
+// 		<label for={ formName + "_minmax" } class="sr-only">Length/Value min/max</label>
+// 		<div
+// 			_={ "on click toggle @checked on #" + formName + "_minmax" }
+// 			class="flex flex-row items-center justify-between gap-2 p-2 background_primary bodytext cursor-pointer"
+// 		>
+// 			<span class="block">Length/Value min/max</span>
+// 			<span class="block peer-checked/minmax:hidden material-icons">keyboard_arrow_down</span>
+// 			<span class="hidden peer-checked/minmax:block material-icons">keyboard_arrow_right</span>
+// 		</div>
+// 		<div class="border-t border-gray-200 background_primary hidden peer-checked/minmax:block">
+// 			<header class="flex items-center justify-between p-2">
+// 				<span class="bodytext">Min and max value/length for the input value (int and float are compared by value).</span>
+// 				<button
+// 					_="on click
+// 						set (<input/> in closest <div/>)'s value to ''"
+// 					type="button"
+// 					class="bodytext underline underline-offset-4 input_focus"
+// 				>
+// 					Reset
+// 				</button>
+// 			</header>
+// 			<div class="border-t border-gray-200 p-2">
+// 				<div class="flex justify-between gap-4">
+// 					<label for="requirements_min_value" class="flex items-center gap-2">
+// 						<span class="bodytext">min</span>
+// 						<input
+// 							type="number"
+// 							id="requirements_min_value"
+// 							name="requirements_min_value"
+// 							placeholder="min"
+// 							class="input_border input_focus bodytext"
+// 						/>
+// 					</label>
+// 					<label for="requirements_max_value" class="flex items-center gap-2">
+// 						<span class="bodytext">max</span>
+// 						<input
+// 							type="number"
+// 							id="requirements_max_value"
+// 							name="requirements_max_value"
+// 							placeholder="max"
+// 							class="input_border input_focus bodytext"
+// 						/>
+// 					</label>
+// 				</div>
+// 			</div>
+// 		</div>
+// 	</div>
+// 	<div
+// 		class="mt-1.5 overflow-hidden rounded-lg border border-gray-200 has-[:focus]:ring-2 has-[:focus]:ring-indigo-500"
+// 	>
+// 		<input type="checkbox" name={ formName + "_equneq" } id={ formName + "_equneq" } class="sr-only peer/equneq"/>
+// 		<label for={ formName + "_equneq" } class="sr-only">Length/Value equality</label>
+// 		<div
+// 			_={ "on click toggle @checked on #" + formName + "_equneq" }
+// 			class="flex flex-row items-center justify-between gap-2 p-2 background_primary bodytext cursor-pointer"
+// 		>
+// 			<span class="block">Length/Value equality</span>
+// 			<span class="block peer-checked/equneq:hidden material-icons">keyboard_arrow_down</span>
+// 			<span class="hidden peer-checked/equneq:block material-icons">keyboard_arrow_right</span>
+// 		</div>
+// 		<div class="border-t border-gray-200 background_primary hidden peer-checked/equneq:block">
+// 			<header class="flex items-center justify-between p-2">
+// 				<span class="bodytext">Input value has to be equal/not equal to given value/length (all types but array are compared by value).</span>
+// 				<button
+// 					_="on click
+// 						set (<input/> in closest <div/>)'s value to ''"
+// 					type="button"
+// 					class="bodytext underline underline-offset-4 input_focus"
+// 				>
+// 					Reset
+// 				</button>
+// 			</header>
+// 			<div class="border-t border-gray-200 p-2">
+// 				<div class="flex justify-between gap-4">
+// 					<label for="requirements_equ_value" class="flex items-center gap-2">
+// 						<span class="bodytext">equal</span>
+// 						<input
+// 							type="text"
+// 							id="requirements_equ_value"
+// 							name="requirements_equ_value"
+// 							placeholder="equals"
+// 							class="input_border input_focus bodytext"
+// 						/>
+// 					</label>
+// 					<label for="requirements_neq_value" class="flex items-center gap-2">
+// 						<span class="bodytext">not equal</span>
+// 						<input
+// 							type="text"
+// 							id="requirements_neq_value"
+// 							name="requirements_neq_value"
+// 							placeholder="euqals not"
+// 							class="input_border input_focus bodytext"
+// 						/>
+// 					</label>
+// 				</div>
+// 			</div>
+// 		</div>
+// 	</div>
+// 	<div
+// 		class="mt-1.5 overflow-hidden rounded-lg border border-gray-200 has-[:focus]:ring-2 has-[:focus]:ring-indigo-500"
+// 	>
+// 		<input type="checkbox" name={ formName + "_con" } id={ formName + "_con" } class="sr-only peer/con"/>
+// 		<label for={ formName + "_con" } class="sr-only">Length/Value min/max</label>
+// 		<div
+// 			_={ "on click toggle @checked on #" + formName + "_con" }
+// 			class="flex flex-row items-center justify-between gap-2 p-2 background_primary bodytext cursor-pointer"
+// 		>
+// 			<span class="block">Contains</span>
+// 			<span class="block peer-checked/con:hidden material-icons">keyboard_arrow_down</span>
+// 			<span class="hidden peer-checked/con:block material-icons">keyboard_arrow_right</span>
+// 		</div>
+// 		<div class="border-t border-gray-200 background_primary hidden peer-checked/con:block">
+// 			<header class="flex items-center justify-between p-2">
+// 				<span class="bodytext">Input value has to contain given value (int and float are ignored).</span>
+// 				<button
+// 					_="on click
+// 						set (<input/> in closest <div/>)'s value to ''"
+// 					type="button"
+// 					class="bodytext underline underline-offset-4 input_focus"
+// 				>
+// 					Reset
+// 				</button>
+// 			</header>
+// 			<div class="border-t border-gray-200 p-2">
+// 				<div class="flex flex-col justify-between gap-2">
+// 					<label for="requirements_con_value" class="flex items-center gap-2">
+// 						<span class="bodytext">contains</span>
+// 						<input
+// 							type="text"
+// 							id="requirements_con_value"
+// 							name="requirements_con_value"
+// 							placeholder="contains"
+// 							class="input_border input_focus bodytext"
+// 						/>
+// 					</label>
+// 					<label for="requirements_nco_value" class="flex items-center gap-2">
+// 						<span class="bodytext">contains not</span>
+// 						<input
+// 							type="text"
+// 							id="requirements_nco_value"
+// 							name="requirements_nco_value"
+// 							placeholder="contains not"
+// 							class="input_border input_focus bodytext"
+// 						/>
+// 					</label>
+// 				</div>
+// 			</div>
+// 		</div>
+// 	</div>
+// 	<div
+// 		class="mt-1.5 overflow-hidden rounded-lg border border-gray-200 has-[:focus]:ring-2 has-[:focus]:ring-indigo-500"
+// 	>
+// 		<input type="checkbox" name={ formName + "_rex" } id={ formName + "_rex" } class="sr-only peer/rex"/>
+// 		<label for={ formName + "_rex" } class="sr-only">Length/Value min/max</label>
+// 		<div
+// 			_={ "on click toggle @checked on #" + formName + "_rex" }
+// 			class="flex flex-row items-center justify-between gap-2 p-2 background_primary bodytext cursor-pointer"
+// 		>
+// 			<span class="block">Regular expression</span>
+// 			<span class="block peer-checked/rex:hidden material-icons">keyboard_arrow_down</span>
+// 			<span class="hidden peer-checked/rex:block material-icons">keyboard_arrow_right</span>
+// 		</div>
+// 		<div class="border-t border-gray-200 background_primary hidden peer-checked/rex:block">
+// 			<header class="flex items-center justify-between p-2">
+// 				<span class="bodytext">Input value has to conform to given regular expression (int and float are validated as string, arrays are ignored).</span>
+// 				<button
+// 					_="on click
+// 						set (<input/> in closest <div/>)'s value to ''"
+// 					type="button"
+// 					class="bodytext underline underline-offset-4 input_focus"
+// 				>
+// 					Reset
+// 				</button>
+// 			</header>
+// 			<div class="border-t border-gray-200 p-2">
+// 				<label for="equ_value" class="flex items-center gap-2">
+// 					<span class="bodytext">regex</span>
+// 					<input
+// 						type="text"
+// 						id="requirements_con_value"
+// 						name="requirements_con_value"
+// 						placeholder="regex"
+// 						class="input_border input_focus bodytext"
+// 					/>
+// 				</label>
+// 			</div>
+// 		</div>
+// 	</div>
+// }

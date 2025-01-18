@@ -1,0 +1,25 @@
+package screens
+
+import (
+	"ht/helper"
+	"ht/model"
+	"ht/web/view/components"
+	"ht/web/view/layout"
+)
+
+templ User() {
+	@layout.Index("User") {
+		@layout.MenuWrapper() {
+		}
+		@BodyLoaderUser()
+	}
+}
+
+templ BodyLoaderUser() {
+	@components.LoadOrTrigger(&model.ComponentTrigger{
+		ComponentUrl: "/project/" + helper.GetRequestContext(ctx).ProjectRID.String() + "/user/body",
+		Trigger:      "reloadUser",
+	}) {
+		@layout.InnerBody(16, 20, 8, 8)
+	}
+}

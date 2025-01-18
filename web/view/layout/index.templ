@@ -1,0 +1,69 @@
+package layout
+
+import (
+	"fmt"
+	"ht/helper"
+)
+
+templ Index(title string) {
+	if !helper.GetRequestContext(ctx).HxRequest {
+		<!DOCTYPE html>
+		<html lang="en" class="w-screen h-screen scroll-smooth overflow-hidden" hx-ext="loading-states">
+			<head>
+				<title>{ title }</title>
+				<meta name="description" content="Your custom backend"/>
+				<meta name="keywords" content="backend, fast, easy, build, go, htmx, templ"/>
+				<meta name="author" content="Simon Herrmann"/>
+				<meta charset="UTF-8"/>
+				<meta name="viewport" content="width=device-width, initial-scale=1"/>
+				// styles
+				// <link rel="stylesheet" href="/static/styles/output.css" media="print" onload="this.media='all'"/>
+				<link rel="stylesheet" href="/static/styles/output.css"/>
+				<link rel="stylesheet" href="/static/styles/prism.css"/>
+				// scripts
+				<script src="/static/scripts/htmx.min.js"></script>
+				<script src="/static/scripts/htmxLoading.min.js" defer></script>
+				<script async src="/static/scripts/hyperscript.min.js" defer></script>
+				<script src="/static/scripts/prism.js"></script>
+				// dev logging
+				// <script>
+				// 	htmx.logger = function(elt, event, data) {
+				// 		if(console) {
+				// 			console.log(event, elt, data);
+				// 		}
+				// 	}
+				// </script>
+			</head>
+			<body
+				hx-boost="true"
+				id="full-page"
+				class="flex w-screen min-h-screen background_secondary"
+				_="on load if cookies.darkMode is 'true' add .dark to body"
+			>
+				// <img alt="loading..." id="body-loading" class="htmx-indicator brightness-0 dark:brightness-200" width="30" height="20" src="/static/images/bars.svg"/>
+				{ children... }
+				<div tabindex="-1" id="global-popup"></div>
+				<div tabindex="-1" id="global-error"></div>
+			</body>
+		</html>
+	} else {
+		<body
+			hx-boost="true"
+			id="full-page"
+			class="flex w-screen min-h-screen background_secondary"
+			_="on load if cookies.darkMode is 'true' add .dark to body"
+		>
+			{ children... }
+		</body>
+	}
+}
+
+templ InnerBody(paddingTop int, paddingBottom int, paddingLeft int, paddingRight int) {
+	<div class={ fmt.Sprintf("flex flex-col grow h-screen pt-%v pb-%v pl-%v pr-%v items-center background_secondary overflow-scroll", paddingTop, paddingBottom, paddingLeft, paddingRight) }>
+		<div class="w-full lg:max-w-[60vw]">
+			// <div class={ fmt.Sprintf("flex flex-col w-full pt-%v pb-%v pl-%v pr-%v max-w-full", paddingTop, paddingBottom, paddingLeft, paddingRight) }>
+			// 	<div class="w-full max-w-full mx-auto sm:max-w-[85vw] md:max-w-[70vw] lg:max-w-[60vw] xl:max-w-[50vw]">
+			{ children... }
+		</div>
+	</div>
+}

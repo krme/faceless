@@ -1,0 +1,133 @@
+package components
+
+import "ht/helper"
+
+type MenuEditEntry struct {
+	ID        string
+	Icon      string
+	Name      string
+	HxGet     string
+	HxPost    string
+	HxVals    string
+	HxTrigger string
+	Class     string
+	HScript   string
+	Disabled  bool
+	// calculated
+	Hash string
+}
+
+func (r *MenuEditEntry) HashButton() string {
+	if len(r.Hash) == 0 {
+		if len(r.ID) > 0 {
+			r.Hash = helper.Hash32(r.ID)
+		} else if len(r.HxGet) > 0 {
+			r.Hash = helper.Hash32(r.HxGet)
+		} else {
+			r.Hash = helper.Hash32(r.HxPost)
+		}
+	}
+	return "button_" + r.Hash
+}
+
+templ MenuEdit(mainButton MenuEditEntry, buttonGroups ...[]MenuEditEntry) {
+	<div class="min-w-min select-none">
+		<div class="relative">
+			<div class="w-auto inline-flex justify-end items-stretch rounded-lg p-[0.2rem] background_primary border border_secondary">
+				@MenuEditButton(mainButton)
+				if len(buttonGroups) > 0 {
+					<div class="flex divide-x divider_secondary">
+						<div class="w-[0.15rem]"></div>
+						<div class="w-[0.2rem]"></div>
+					</div>
+					<div
+						class="inline-flex justify-center items-center rounded-lg px-2 py-1 bodytext button_hover_primary"
+						_={ "on click or keyup[key is 'Enter'] toggle between .hidden and .absolute on #menu_" + mainButton.HashButton() }
+						tabindex="0"
+					>
+						<span class="sr-only">Menu</span>
+						<span class="material-icons">more_vert</span>
+					</div>
+				}
+			</div>
+			if len(buttonGroups) > 0 {
+				<div
+					id={ "menu_" + mainButton.HashButton() }
+					class="end-0 z-10 mt-2 w-56 divide-y divider_secondary rounded-lg background_primary border border_secondary shadow-lg hidden"
+					role="menu"
+					_="on keyup[key is 'Escape'] from the body add .hidden"
+				>
+					for _, buttonGroup := range buttonGroups {
+						<div class="grid gap-1 p-2">
+							for _, button := range buttonGroup {
+								@MenuEditButton(button)
+							}
+						</div>
+					}
+				</div>
+			}
+		</div>
+	</div>
+}
+
+script onClickHandler(hxTrigger string) {
+	console.log(hxTrigger)
+	var reloadingDivs = document.querySelectorAll('div[id^='+hxTrigger+']');
+	console.log(reloadingDivs)
+	for (const reloadingDiv of reloadingDivs) {
+		console.log(reloadingDiv.id)
+		htmx.trigger('div[id='+reloadingDiv.id+']', hxTrigger)
+	}
+}
+
+templ MenuEditButton(entry MenuEditEntry) {
+	if len(entry.HxGet) > 0 {
+		<a
+			if len(entry.ID) > 0 {
+				id={ entry.ID }
+			}
+			class={ "w-full inline-flex justify-start items-center rounded-lg text-sm/none bodytext", templ.KV("px-4 py-2", len(entry.Icon) == 0), templ.KV("gap-1 px-3 py-2", len(entry.Icon) > 0), entry.Class }
+			href={ templ.SafeURL(entry.HxGet) }
+			if len(entry.HxTrigger) > 0 {
+				hx-on:click={ onClickHandler(entry.HxTrigger) }
+			}
+			disabled?={ entry.Disabled }
+			if len(entry.HScript) > 0 {
+				_={ entry.HScript }
+			}
+			if len(entry.HxVals) > 0 {
+				hx-vals={ entry.HxVals }
+			}
+			data-loading-disable
+		>
+			if len(entry.Icon) > 0 {
+				<span class="material-icons text-[1rem]">{ entry.Icon }</span>
+			}
+			{ entry.Name }
+		</a>
+	} else {
+		<button
+			if len(entry.ID) > 0 {
+				id={ entry.ID }
+			}
+			type="button"
+			class={ "w-full inline-flex justify-start items-center rounded-lg text-sm/none bodytext", templ.KV("px-4 py-2", len(entry.Icon) == 0), templ.KV("gap-1 px-3 py-2", len(entry.Icon) > 0), entry.Class }
+			if len(entry.HxTrigger) > 0 {
+				hx-on:click={ onClickHandler(entry.HxTrigger) }
+			}
+			disabled?={ entry.Disabled }
+			if len(entry.HScript) > 0 {
+				_={ entry.HScript }
+			}
+			if len(entry.HxVals) > 0 {
+				hx-vals={ entry.HxVals }
+			}
+			data-loading-disable
+		>
+			if len(entry.Icon) > 0 {
+				<span class="material-icons text-[1rem]">{ entry.Icon }</span>
+			}
+			{ entry.Name }
+		</button>
+	}
+}

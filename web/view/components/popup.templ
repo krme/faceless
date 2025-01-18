@@ -1,0 +1,107 @@
+package components
+
+import (
+	"fmt"
+	"strings"
+)
+
+func removeSpaces(in string) string {
+	return strings.ReplaceAll(in, " ", "")
+}
+
+templ PopupError(title string, description string) {
+	@Popup(title, 50) {
+		<div role="alert" class="absolute z-20 top-20 left-0 right-0 w-96 max-h-[80vh] m-auto">
+			<div class="px-4 py-3 flex flex-row justify-between text-white font-bold rounded-t bg-red-500">
+				{ title }
+				<button type="button" _={ "on click trigger close" + removeSpaces(title) } class="s-8 inline-flex justify-center items-center rounded-lg text-sm text-white bg-transparent hover:bg-red-500">
+					<span class="material-icons">close</span>
+					<span class="sr-only">Close popup</span>
+				</button>
+			</div>
+			<div class="px-4 py-3 rounded-b border border-t-0 border-red-500 text-red-700 bg-red-100">
+				<p class="text-red-700">{ description }</p>
+			</div>
+		</div>
+	}
+}
+
+templ PopupInfo(title string, description string) {
+	@Popup(title, 50) {
+		<div role="alert" class="absolute z-20 top-20 left-0 right-0 w-96 max-h-[80vh] m-auto">
+			<div class="px-4 py-3 flex flex-row justify-between text-white font-bold rounded-t bg-indigo-700">
+				{ title }
+				<button type="button" _={ "on click trigger close" + removeSpaces(title) } class="s-8 inline-flex justify-center items-center rounded-lg text-sm text-white bg-transparent hover:bg-indigo-500">
+					<span class="material-icons">close</span>
+					<span class="sr-only">Close popup</span>
+				</button>
+			</div>
+			<div class="px-4 py-3 rounded-b border border-t-0 border-indigo-500 text-indigo-700 bg-indigo-100">
+				<p>{ description }</p>
+			</div>
+		</div>
+	}
+}
+
+templ Popup(key string, zIndex int) {
+	<div
+		id="modal"
+		class={ "z-" + fmt.Sprint(zIndex) }
+		_={ "on close" + removeSpaces(key) + " remove me on keyup[key is 'Escape'] from the body remove me" }
+	>
+		<div _={ "on click trigger close" + removeSpaces(key) } class="absolute top-0 left-0 w-screen h-screen bg-gray-600 bg-opacity-50"></div>
+		{ children... }
+	</div>
+}
+
+templ PopupHeader(title string) {
+	<div class="flex flex-row justify-between mb-4">
+		<h3 class="mr-4">
+			{ title }
+		</h3>
+		<button type="button" _={ "on click trigger close" + removeSpaces(title) } class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+			<span class="material-icons">close</span>
+			<span class="sr-only">Close popup</span>
+		</button>
+	</div>
+}
+
+templ PopupForm(title string, buttonTitle string, hxPost string) {
+	@Popup(title, 40) {
+		<div class="absolute z-10 top-[10vh] left-0 right-0 card background_primary md:max-w-96 max-w-[90vw] max-h-[80vh] m-auto overflow-x-scroll">
+			@PopupHeader(title)
+			// TODO update to select_type
+			@Form(FormConf{HxPost: hxPost, HScript: "on submit trigger close" + removeSpaces(title)}) {
+				{ children... }
+				<button type="submit" class="w-full base_button_lg button_primary">{ buttonTitle }</button>
+			}
+		</div>
+	}
+}
+
+templ PopupDelete(deleteNames []string, formPost string) {
+	@Popup("Delete", 40) {
+		<div class="absolute z-10 top-[10vh] left-0 right-0 card background_primary md:max-w-96 max-w-[90vw] max-h-[80vh] m-auto overflow-x-scroll">
+			@PopupHeader("Delete")
+			@Form(FormConf{HxPost: formPost, HScript: "on submit trigger closeDelete"}) {
+				<div class="flex-1">
+					<p class="bodytext">Do you really want to delete:</p>
+					<ul class="list-disc list-inside mt-4">
+						for _, name := range deleteNames {
+							<li class="bodytext">{ name }</li>
+						}
+					</ul>
+					<div class="mt-8 flex gap-2">
+						<button _="on click trigger closeDelete" class="w-full base_button_lg button_hover_primary">
+							Cancel
+						</button>
+						<button type="submit" class="w-full base_button_lg button_red">
+							<span class="material-icons mr-2" data-loading-class="hidden">delete</span>
+							Delete
+						</button>
+					</div>
+				</div>
+			}
+		</div>
+	}
+}
