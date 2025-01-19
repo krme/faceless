@@ -4,13 +4,14 @@ import logging
 import uvicorn
 from fastapi import FastAPI, Request
 
-import jobs.handler.compareAudio as functions
-
+import jobs.handler.compareAudio as compareAudio
+import jobs.handler.createSentence as createSentence
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 app = FastAPI()
-app.include_router(functions.router)
+app.include_router(compareAudio.router)
+app.include_router(createSentence.router)
 
 
 @app.get("/")
