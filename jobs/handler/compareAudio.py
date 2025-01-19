@@ -2,8 +2,8 @@ from uuid import UUID
 
 from fastapi import APIRouter, FastAPI, HTTPException
 from pydantic import BaseModel
-from jobs.tasks.db_functions import get_user, load_db_config, update_user, get_latest_identification_attempt, get_vector_dist, update_latest_identification_attempt
-from jobs.tasks.compare import preprocess_recording, extract_features
+from tasks.db_functions import get_user, load_db_config, update_user, get_latest_identification_attempt, get_vector_dist, update_latest_identification_attempt
+from tasks.compare import preprocess_recording, extract_features
 
 
 router = APIRouter()

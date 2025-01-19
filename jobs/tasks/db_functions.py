@@ -6,7 +6,7 @@ import ssl
 from uuid import UUID
 import librosa
 
-from jobs.custom_types.records import Attempt, User
+from custom_types.records import Attempt, User
 
 
 def convert_blob_to_librosa(blob):

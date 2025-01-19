@@ -4,8 +4,8 @@ import logging
 import uvicorn
 from fastapi import FastAPI, Request
 
-import jobs.handler.compareAudio as compareAudio
-import jobs.handler.createSentence as createSentence
+import handler.compareAudio as compareAudio
+import handler.createSentence as createSentence
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
