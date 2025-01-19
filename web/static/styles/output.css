@@ -2939,6 +2939,10 @@ input {
   width: 14rem !important;
 }
 
+.w-6 {
+  width: 1.5rem !important;
+}
+
 .w-8 {
   width: 2rem !important;
 }
@@ -2957,10 +2961,6 @@ input {
 
 .w-\[21px\] {
   width: 21px !important;
-}
-
-.w-\[30px\] {
-  width: 30px !important;
 }
 
 .w-auto {
@@ -3077,16 +3077,6 @@ input {
   animation: spin 1s linear infinite !important;
 }
 
-@keyframes pulse {
-  50% {
-    opacity: .5;
-  }
-}
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
-}
-
 .cursor-pointer {
   cursor: pointer !important;
 }
@@ -3157,10 +3147,6 @@ input {
   gap: 0.25rem !important;
 }
 
-.gap-10 {
-  gap: 2.5rem !important;
-}
-
 .gap-2 {
   gap: 0.5rem !important;
 }
@@ -3210,10 +3196,6 @@ input {
 
 .place-self-center {
   place-self: center !important;
-}
-
-.self-center {
-  align-self: center !important;
 }
 
 .self-stretch {
@@ -3338,6 +3320,11 @@ input {
   background-color: rgb(240 245 238 / var(--tw-bg-opacity, 1)) !important;
 }
 
+.bg-\[\#F47687\] {
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(244 118 135 / var(--tw-bg-opacity, 1)) !important;
+}
+
 .bg-gray-100 {
   --tw-bg-opacity: 1 !important;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1)) !important;
@@ -3402,17 +3389,8 @@ input {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
 }
 
-.bg-blue-600 {
-  --tw-bg-opacity: 1 !important;
-  background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1)) !important;
-}
-
 .bg-opacity-50 {
   --tw-bg-opacity: 0.5 !important;
-}
-
-.fill-blue-600 {
-  fill: #2563eb !important;
 }
 
 .p-0 {
@@ -4851,6 +4829,11 @@ input {
   color: rgb(240 245 238 / var(--tw-text-opacity, 1)) !important;
 }
 
+.text-\[\#F47687\] {
+  --tw-text-opacity: 1 !important;
+  color: rgb(244 118 135 / var(--tw-text-opacity, 1)) !important;
+}
+
 .text-\[\#F9F9F9\] {
   --tw-text-opacity: 1 !important;
   color: rgb(249 249 249 / var(--tw-text-opacity, 1)) !important;
@@ -4904,11 +4887,6 @@ input {
 .text-zinc-500 {
   --tw-text-opacity: 1 !important;
   color: rgb(113 113 122 / var(--tw-text-opacity, 1)) !important;
-}
-
-.text-gray-200 {
-  --tw-text-opacity: 1 !important;
-  color: rgb(229 231 235 / var(--tw-text-opacity, 1)) !important;
 }
 
 .underline {
@@ -18701,11 +18679,6 @@ input {
 .dark\:text-indigo-500:where(.dark, .dark *) {
   --tw-text-opacity: 1 !important;
   color: rgb(99 102 241 / var(--tw-text-opacity, 1)) !important;
-}
-
-.dark\:text-gray-600:where(.dark, .dark *) {
-  --tw-text-opacity: 1 !important;
-  color: rgb(75 85 99 / var(--tw-text-opacity, 1)) !important;
 }
 
 .dark\:brightness-200:where(.dark, .dark *) {

@@ -27,7 +27,6 @@ module.exports = {
     plugin(function({ addVariant }) {
       addVariant('children', '&>*')
     }),
-    require('daisyui'),
   ],
   safelist: [
     {
