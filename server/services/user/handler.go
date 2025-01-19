@@ -70,8 +70,6 @@ func (r *UserService) selectOrInsertUser(userRid uuid.UUID) (*model.User, error)
 }
 
 func (r *UserService) CreateReferenceRecording(c echo.Context) (*model.User, error) {
-	r.logger.Println("creating recording")
-
 	currentStepString := c.Param("step")
 	currentStep, err := strconv.Atoi(currentStepString)
 	if err != nil {

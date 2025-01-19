@@ -5,6 +5,7 @@ import (
 	"ht/helper"
 	"ht/server/database"
 	"ht/server/services/auth"
+	"ht/server/services/identification"
 	"ht/server/services/user"
 	"net/http"
 
@@ -18,8 +19,9 @@ type Server struct {
 	SessionStore *pgstore.PGStore
 	sessionDb    *database.DatabaseConfiguration
 	// services
-	AuthService *auth.AuthService
-	UserService *user.UserService
+	AuthService           *auth.AuthService
+	UserService           *user.UserService
+	IdentificationService *identification.IdentificationAttemptService
 	// jobs
 	JobsPort string
 }
@@ -48,8 +50,9 @@ func NewServer() (*Server, error) {
 		SessionStore: sessionStore,
 		sessionDb:    sessionDb,
 		// services
-		AuthService: auth.NewAuthService(sessionStore),
-		UserService: user.NewUserService(),
+		AuthService:           auth.NewAuthService(sessionStore),
+		UserService:           user.NewUserService(),
+		IdentificationService: identification.NewIdentificationAttemptService(),
 		// jobs
 		JobsPort: helper.GetEnvVariableWithoutDelete("JOBS_PORT"),
 	}, nil

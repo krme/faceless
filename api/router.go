@@ -60,6 +60,7 @@ func (r *Router) RegisterRoutes() {
 
 	authView := handler.NewAuthView(r.server)
 	userView := handler.NewUserView(r.server)
+	identificationView := handler.NewIdentificationView(r.server)
 
 	r.echo.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(
 		rate.Limit(20),
@@ -94,15 +95,15 @@ func (r *Router) RegisterRoutes() {
 	r.echo.GET("/user/onboardingStart", m.ViewAuthMiddleware(userView.HandleOnboardingStart))
 	r.echo.GET("/user/onboardingRecording/:step", m.ViewAuthMiddleware(userView.HandleOnboardingRecording))
 	r.echo.GET("/user/onboardingSuccess", m.ViewAuthMiddleware(userView.HandleOnboardingSuccess))
-	r.echo.GET("/user/identification", m.ViewAuthMiddleware(userView.HandleIdentification))
-	r.echo.GET("/user/waitForAuthentication", m.ViewAuthMiddleware(userView.HandleAuthenticationWaiting))
-	r.echo.GET("/user/showResultReady", m.ViewAuthMiddleware(userView.HandleShowResultPage))
-	r.echo.GET("/user/showResultSuccess", m.ViewAuthMiddleware(userView.HandleShowResultSuccess))
-	r.echo.GET("/user/showResultFailure", m.ViewAuthMiddleware(userView.HandleShowResultFailure))
+
+	r.echo.GET("/identification", m.ViewAuthMiddleware(identificationView.HandleIdentification))
+	r.echo.GET("/identification/identicationPending", m.ViewAuthMiddleware(identificationView.HandleAuthenticationWaiting))
+	r.echo.GET("/identification/result", m.ViewAuthMiddleware(identificationView.HandleResult))
 
 	// api
 	r.echo.POST("/user/createReferenceRecording/:step", userView.HandleCreateReferenceRecording)
-	r.echo.POST("/user/identify", userView.HandleIdentifyUser)
+
+	r.echo.POST("/identification/createIdentificationAttempt", identificationView.HandleCreateIdentificationAttempt)
 
 	r.echo.RouteNotFound("/*", handler.HandleNotFound)
 

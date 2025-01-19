@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, FastAPI, HTTPException
 from pydantic import BaseModel
-from tasks.db_functions import get_user, load_db_config, update_user, get_latest_identification_attempt, update_latest_identification_attempt, get_vector_dist
+from jobs.tasks.db_identification_attempt import get_user, load_db_config, update_user, get_latest_identification_attempt, update_latest_identification_attempt, get_vector_dist
 from tasks.compare import preprocess_recording, extract_features
 
 
