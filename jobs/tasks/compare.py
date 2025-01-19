@@ -12,7 +12,7 @@ def extract_features(y: np.ndarray, sr: float) -> np.ndarray:
     return mfccs_mean 
 
 
-def preprocess_recording(y, sr) -> Tuple[np.ndarray, float]:
+def preprocess_recording(y: np.ndarray, sr: float) -> Tuple[np.ndarray, float]:
     if y is None or sr is None:
         return np.array([]), 0
     recording, _ = librosa.effects.trim(y)

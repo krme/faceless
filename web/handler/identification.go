@@ -41,10 +41,13 @@ func (r *IdentificationView) HandleIdentification(c echo.Context) error {
 
 func (r *IdentificationView) HandleAuthenticationWaiting(c echo.Context) error {
 	userId := helper.GetCurrentUserRID(c.Request().Context())
-	_, err := helper.StartJob(fmt.Sprintf("http://localhost:%v/jobs/identify", r.server.JobsPort), map[string]string{"userId": userId.String()})
+	log.Printf("starting identification for userId: %v", userId)
+	identificationAttempt, err := helper.StartJob(fmt.Sprintf("http://localhost:%v/jobs/identify", r.server.JobsPort), map[string]string{"user_rid": userId.String()})
 	if err != nil {
 		return err
 	}
+
+	log.Printf("identificationAttempt result: %v", string(identificationAttempt))
 
 	return render(c, screens.WaitForAuthentication())
 }

@@ -2,7 +2,6 @@ package identification
 
 import (
 	"bytes"
-	"fmt"
 	"ht/helper"
 	"ht/model"
 	"ht/server/database"
@@ -111,18 +110,4 @@ func (r *IdentificationAttemptService) GetLatestIdentificationAttempt(c echo.Con
 	}
 
 	return identificationAttempt, nil
-}
-
-// jobs
-func (r *IdentificationAttemptService) ProcessIdentificationAttempt(c echo.Context) (bool, error) {
-	userId := helper.GetCurrentUserRID(c.Request().Context())
-	body, err := helper.StartJob(fmt.Sprintf("http://localhost:%v/jobs/identify", r.jobsPort), map[string]string{"user_rid": userId.String()})
-	if err != nil {
-		return false, err
-	}
-
-	if string(body) == "true" {
-		return true, nil
-	}
-	return false, nil
 }

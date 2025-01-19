@@ -5,9 +5,9 @@ from fastapi import APIRouter, FastAPI, HTTPException
 from pydantic import BaseModel
 from tasks.db_helper import load_db_config
 from tasks.db_identification_attempt import get_latest_identification_attempt, update_latest_identification_attempt
-from tasks.db_user import get_user, load_db_config, update_user, get_vector_dist
+from tasks.db_user import get_user, update_user, get_vector_dist
 
-from tasks.compare import preprocess_recording, extract_features
+from tasks.compare import convert_blob_to_librosa, preprocess_recording, extract_features
 
 
 router = APIRouter()
@@ -47,7 +47,7 @@ async def process_reference_recordings(request: ProcessReferenceRecordingsReques
 
 
 class IdentifyRequest(BaseModel):
-    rid: UUID
+    user_rid: UUID
 
 
 @router.post("/jobs/identify")
@@ -57,21 +57,26 @@ async def identify(request: IdentifyRequest):
     """
     try:
         dbConfig = load_db_config()
-        recording, sr = await get_latest_identification_attempt(dbConfig, request.rid)
+        
+        attempt = await get_latest_identification_attempt(dbConfig, request.user_rid)
 
-        preprocessed_recording = preprocess_recording(recording, sr)
+        recording, sr = convert_blob_to_librosa(attempt.recording)
 
-        mfcc = extract_features(preprocessed_recording)
+        preprocessed_recording, sr = preprocess_recording(recording, sr)
 
-        dist = get_vector_dist(mfcc)
+        mfcc = extract_features(preprocessed_recording, sr)
 
-        # adjust threshold
+        dist = await get_vector_dist(dbConfig, request.user_rid, mfcc)
+
+        # TODO adjust threshold
         identified = False
         if dist < 50:
             identified = True
 
-        await update_latest_identification_attempt(dbConfig, request.rid, identified, mfcc)
+        logger.info(identified)
+        await update_latest_identification_attempt(dbConfig, attempt.rid, identified, mfcc)
     except Exception as e:
+        logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 

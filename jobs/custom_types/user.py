@@ -15,7 +15,6 @@ class User(BaseModel):
     recording_3: bytes | None
 
     def from_json_map(json: Dict[str, any]):
-        print(json)
         return User(
             id=json['id'],
             rid=json['rid'],

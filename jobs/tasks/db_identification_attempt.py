@@ -1,12 +1,13 @@
-from typing import List
+import json
 from uuid import UUID
 
+import numpy as np
+
 from custom_types.attempt import Attempt
-from jobs.tasks.compare import convert_blob_to_librosa
-from jobs.tasks.db_helper import DBConfig, close_db, init_db
+from tasks.db_helper import DBConfig, close_db, init_db
 
 
-async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, identified: bool, mfcc: List[float]):
+async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, identified: bool, mfcc: np.ndarray):
     conn = None
     try:
         conn = await init_db(db_config)
@@ -14,7 +15,7 @@ async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, i
         # SQL-Query zur Einfügung der Embeddings in die Datenbank
         insert_query = """
             UPDATE
-                "user"
+                identification_attempt
             SET
                 recording_mfcc = $1,
                 identified = $2,
@@ -23,9 +24,7 @@ async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, i
                 rid=$3;
         """
 
-        # Einfügen in die Datenbank
-        await conn.executemany(insert_query, mfcc, identified, rid)
-
+        await conn.fetch(insert_query, json.dumps(mfcc.tolist()), identified, rid)
     except Exception as e:
         raise Exception(f"Error while updating latest_identification data: {str(e)}")
     finally:
@@ -33,7 +32,7 @@ async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, i
             await close_db(conn)
 
 
-async def get_latest_identification_attempt(db_config: DBConfig, rid: UUID):
+async def get_latest_identification_attempt(db_config: DBConfig, user_rid: UUID) -> Attempt:
     conn = None
     try:
         conn = await init_db(db_config)
@@ -49,18 +48,16 @@ async def get_latest_identification_attempt(db_config: DBConfig, rid: UUID):
             ORDER BY created_at DESC
             LIMIT 1;
         """
-        query_result = await conn.fetch(query, rid)
-        # extract binary file from json
-        # reconstruct adio file from binary
-        # add convert_blob_to_librosa
-        attempt = Attempt.from_json_map(query_result)
+        query_result = await conn.fetch(query, user_rid)
 
-        recording = convert_blob_to_librosa(attempt.recording)
+        if len(query_result) == 0:
+            raise Exception("No identification attempt found")
 
+        attempt = Attempt.from_json_map(query_result[0])
     except Exception as e:
         print(f"Error while getting latest_identification data: {str(e)}")
         raise Exception(f"Error while getting latest_identification data: {str(e)}")
     finally:
         if conn:
             await close_db(conn)
-    return recording
+    return attempt
