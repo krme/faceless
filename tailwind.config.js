@@ -26,7 +26,8 @@ module.exports = {
     require('@tailwindcss/typography'),
     plugin(function({ addVariant }) {
       addVariant('children', '&>*')
-    })
+    }),
+    require('daisyui'),
   ],
   safelist: [
     {

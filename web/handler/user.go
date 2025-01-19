@@ -39,6 +39,22 @@ func (r *UserView) HandleOnboardingSuccess(c echo.Context) error {
 	return render(c, screens.OnboardingSuccess())
 }
 
+func (r *UserView) Test(c echo.Context) error {
+	return render(c, screens.Test())
+}
+
+func (r *UserView) HandleShowResultPage(c echo.Context) error {
+	return render(c, screens.ShowResultReady())
+}
+
+func (r *UserView) HandleShowResult(c echo.Context) error {
+	return render(c, screens.ShowResult())
+}
+
+func (r *UserView) HandleAuthenticationWaiting(c echo.Context) error {
+	return render(c, screens.WaitForAuthentication())
+}
+
 // api
 func (r *UserView) HandleCreateReferenceRecording(c echo.Context) error {
 	// TODO get current step from url
