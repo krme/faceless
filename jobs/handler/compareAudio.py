@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, FastAPI, HTTPException
 from pydantic import BaseModel
-from tasks.db_functions import get_user, load_db_config, update_user, get_latest_identification_attempt, update_latest_identification_attempt
+from tasks.db_functions import get_user, load_db_config, update_user, get_latest_identification_attempt, update_latest_identification_attempt, get_vector_dist
 from tasks.compare import preprocess_recording, extract_features
 
 
@@ -50,9 +50,9 @@ async def identify(request: IdentifyRequest):
 
         preprocessed_recording = preprocess_recording(recording, sr)
 
-        mfcc = [99,11,13]#extract_features(preprocessed_recording)
+        mfcc = extract_features(preprocessed_recording)
 
-        dist = 12 #get_vector_dist(mfcc)
+        dist = get_vector_dist(mfcc)
 
         # adjust threshold
         identified = False
