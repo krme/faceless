@@ -10,18 +10,18 @@ class User(BaseModel):
     """
     id: int = 0
     rid: UUID = UUID(int=0)
-    recording_1 = []
-    recording_2 = []
-    recording_3 = []
+    recording_1: bytes
+    recording_2: bytes
+    recording_3: bytes
 
 
     def from_json_map(json: Dict[str, any]):
         return User(
             id=json['id'],
             rid=json['rid'],
-            doc_hash=json['recording_1'],
-            doc_hash=json['recording_2'],
-            doc_hash=json['recording_3']
+            recording_1=json['recording_1'],
+            recording_2=json['recording_2'],
+            recording_3=json['recording_3']
         )
     
     def get_recordings(self):
@@ -33,7 +33,7 @@ class Attempt(BaseModel):
     """
     id: int = 0
     rid: UUID = UUID(int=0)
-    recording = []
+    recording: bytes
 
     def from_json_map(json: Dict[str, any]):
         return Attempt(

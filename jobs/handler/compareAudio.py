@@ -1,14 +1,19 @@
 from uuid import UUID
 
 from fastapi import APIRouter, FastAPI, HTTPException
-from jobs.tasks.db_functions import DBConfig, get_user, init_db, load_db_config, update_user, close_db, get_latest_identification_attempt, get_vector_dist, update_latest_identification_attempt
-from jobs.tasks.compare import preprocess_recording, extract_features
+from pydantic import BaseModel
+from tasks.db_functions import DBConfig, get_user, init_db, load_db_config, update_user, close_db, get_latest_identification_attempt, get_vector_dist, update_latest_identification_attempt
+from tasks.compare import preprocess_recording, extract_features
 import datetime
 # from sklearn.metrics import pairwise
 
 router = APIRouter()
 
-    
+
+class IdentifyRequest(BaseModel):
+    rid: UUID
+
+
 @router.post("/ProcessReferenceRecordings")
 async def process_reference_recordings(rid: UUID):
     """
@@ -32,19 +37,19 @@ async def process_reference_recordings(rid: UUID):
 
     
 @router.post("/identify")
-async def identify(rid: UUID):
+async def identify(body: IdentifyRequest):
     """
     To identify the user at login
     """
     try:
         dbConfig = load_db_config()
-        recording = get_latest_identification_attempt(dbConfig, rid)
+        recording, sr = await get_latest_identification_attempt(dbConfig, body.rid)
 
-        preprocessed_recording = preprocess_recording(recording)
+        preprocessed_recording = preprocess_recording(recording, sr)
 
-        mfcc = extract_features(preprocessed_recording)
+        mfcc = [99,11,13]#extract_features(preprocessed_recording)
 
-        dist = get_vector_dist(mfcc)
+        dist = 12 #get_vector_dist(mfcc)
 
         # adjust threshold
         if dist < 50:
@@ -52,7 +57,7 @@ async def identify(rid: UUID):
         else:
             identified = False
         
-        update_latest_identification_attempt(dbConfig, rid, preprocessed_recording, mfcc)
+        await update_latest_identification_attempt(dbConfig, body.rid, identified, mfcc)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
