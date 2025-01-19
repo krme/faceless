@@ -58,6 +58,26 @@ func (r *UserView) HandleOnboardingSuccess(c echo.Context) error {
 	return render(c, screens.OnboardingSuccess())
 }
 
+func (r *UserView) Test(c echo.Context) error {
+	return render(c, screens.Test())
+}
+
+func (r *UserView) HandleShowResultPage(c echo.Context) error {
+	return render(c, screens.ShowResultReady())
+}
+
+func (r *UserView) HandleShowResultSuccess(c echo.Context) error {
+	return render(c, screens.ShowResultSuccess())
+}
+
+func (r *UserView) HandleShowResultFailure(c echo.Context) error {
+	return render(c, screens.ShowResultFailure())
+}
+
+func (r *UserView) HandleAuthenticationWaiting(c echo.Context) error {
+	return render(c, screens.WaitForAuthentication())
+}
+
 // api
 func (r *UserView) HandleCreateReferenceRecording(c echo.Context) error {
 	currentStepString := c.Param("step")

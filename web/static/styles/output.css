@@ -3067,6 +3067,26 @@ input {
   animation: bounce 1s infinite !important;
 }
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite !important;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: .5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+}
+
 .cursor-pointer {
   cursor: pointer !important;
 }
@@ -3190,6 +3210,10 @@ input {
 
 .place-self-center {
   place-self: center !important;
+}
+
+.self-center {
+  align-self: center !important;
 }
 
 .self-stretch {
@@ -3378,8 +3402,17 @@ input {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1)) !important;
 }
 
+.bg-blue-600 {
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1)) !important;
+}
+
 .bg-opacity-50 {
   --tw-bg-opacity: 0.5 !important;
+}
+
+.fill-blue-600 {
+  fill: #2563eb !important;
 }
 
 .p-0 {
@@ -4871,6 +4904,11 @@ input {
 .text-zinc-500 {
   --tw-text-opacity: 1 !important;
   color: rgb(113 113 122 / var(--tw-text-opacity, 1)) !important;
+}
+
+.text-gray-200 {
+  --tw-text-opacity: 1 !important;
+  color: rgb(229 231 235 / var(--tw-text-opacity, 1)) !important;
 }
 
 .underline {
@@ -18663,6 +18701,11 @@ input {
 .dark\:text-indigo-500:where(.dark, .dark *) {
   --tw-text-opacity: 1 !important;
   color: rgb(99 102 241 / var(--tw-text-opacity, 1)) !important;
+}
+
+.dark\:text-gray-600:where(.dark, .dark *) {
+  --tw-text-opacity: 1 !important;
+  color: rgb(75 85 99 / var(--tw-text-opacity, 1)) !important;
 }
 
 .dark\:brightness-200:where(.dark, .dark *) {
