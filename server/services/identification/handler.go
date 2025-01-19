@@ -27,12 +27,12 @@ func NewIdentificationAttemptService() *IdentificationAttemptService {
 	dbConnection := database.NewDatabase(
 		"identificationAttempt",
 		&database.DatabaseConfiguration{
-			Host:     helper.GetEnvVariable("DB_USER_HOST"),
-			Port:     helper.GetEnvVariable("DB_USER_PORT"),
-			Database: helper.GetEnvVariable("DB_USER_DATABASE"),
-			Username: helper.GetEnvVariable("DB_USER_USERNAME"),
-			Password: helper.GetEnvVariable("DB_USER_PASSWORD"),
-			Schema:   helper.GetEnvVariable("DB_USER_SCHEMA"),
+			Host:     helper.GetEnvVariable("DB_IDENTIFICATION_HOST"),
+			Port:     helper.GetEnvVariable("DB_IDENTIFICATION_PORT"),
+			Database: helper.GetEnvVariable("DB_IDENTIFICATION_DATABASE"),
+			Username: helper.GetEnvVariable("DB_IDENTIFICATION_USERNAME"),
+			Password: helper.GetEnvVariable("DB_IDENTIFICATION_PASSWORD"),
+			Schema:   helper.GetEnvVariable("DB_IDENTIFICATION_SCHEMA"),
 		},
 	)
 	var identificationAttemptDb IdentificationAttemptDBHandlerFunctions = newIdentificationAttemptDBHandler(dbConnection)
