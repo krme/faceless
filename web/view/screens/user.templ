@@ -349,7 +349,6 @@ templ OnboardingSuccess() {
 		<script>
 			const jsConfetti = new JSConfetti()
 			jsConfetti.addConfetti({
-				// emojis: ['🌈', '⚡️', '💥', '✨', '💫', '🌸'],
 				confettiColors: [
 					'#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd', '#f9bec7',
 				],
@@ -519,6 +518,7 @@ templ RecordSentence(sentence string) {
 	@components.CSRF()
 	<script>
 		var mediaRecorder;
+		var micStream;
 
 		async function startRecording() {
 			if (!window.AudioContext || 
@@ -529,9 +529,9 @@ templ RecordSentence(sentence string) {
 			}
 
 			// Request access to the user's microphone
-			const micStream = await navigator
-					.mediaDevices
-					.getUserMedia({ audio: true });
+			micStream = await navigator
+				.mediaDevices
+				.getUserMedia({ audio: true });
 
 			mediaRecorder = new MediaRecorder(micStream, { mimeType: 'audio/webm' });
 
@@ -546,15 +546,19 @@ templ RecordSentence(sentence string) {
 			const chunks = [];
 
 			mediaRecorder.ondataavailable = (e) => {
+				console.log("audio data available");
 				chunks.push(e.data);
 			};
 
 			mediaRecorder.onstop = async (e) => {
-				console.log("data available after MediaRecorder.stop() called.");
-
 				const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
 				const formData = new FormData();
 				formData.append("recording", blob);
+
+				if (micStream) {
+					micStream.getTracks().forEach(track => track.stop());
+					console.log("Microphone stream stopped");
+				}
 
 				var step = getCurrentStep();
 
