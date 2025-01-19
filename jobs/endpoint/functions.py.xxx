@@ -5,6 +5,7 @@ from uuid import UUID
 
 router = APIRouter()
 
+
 @router.post("/identify")
 async def identify(rid: UUID):
     """
@@ -16,6 +17,7 @@ async def identify(rid: UUID):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @router.post("/ProcessReferenceRecordings")
 async def process_reference_recordings(rid: UUID):
     """
@@ -26,6 +28,7 @@ async def process_reference_recordings(rid: UUID):
         return {"registered": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 app = FastAPI()
 app.include_router(router)
