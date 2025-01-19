@@ -36,14 +36,13 @@ def load_db_config() -> DBConfig:
         port=os.environ.get("PG_PORT", '5432') 
     )
 
+
 async def init_db(config: DBConfig) -> asyncpg.Pool:
-    # Pfad zum Client-Zertifikat
-    # SSL-Verbindung konfigurieren
-    ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-    
-    # Disable hostname checking and certificate verification
-    ssl_context.check_hostname = False  # Do not verify hostname
-    ssl_context.verify_mode = ssl.CERT_NONE  # Do not verify certificates
+    # TODO check if necesary
+    # ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+
+    # ssl_context.check_hostname = False  # Do not verify hostname
+    # ssl_context.verify_mode = ssl.CERT_NONE  # Do not verify certificates
 
     try:
         conn = await asyncpg.connect(
@@ -52,11 +51,8 @@ async def init_db(config: DBConfig) -> asyncpg.Pool:
             database=config.database,
             host=config.host,
             port=config.port,
-            ssl=ssl_context
+            # ssl=ssl_context
         )
-
-        # Create tables if not existent
-        #await create_extension_and_tables_if_not_exists(conn) TODO check what to do if no table exists
 
         if not conn:
             raise Exception("Failed to create database connection (NONE).")
@@ -73,7 +69,6 @@ async def close_db(conn):
 
 
 async def get_user(db_config: DBConfig, rid: UUID):
-    # 
     conn = None
     recordings = []
     try:
@@ -192,12 +187,6 @@ async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, i
 
 
 async def get_vector_dist(db_config: DBConfig, rid: UUID, recording_mfcc: List[float]):
-    '''
-    Gets chunks by ordered by vector distance and with a distance threshhold.
-    The limit of chunks is used per doc_hash.
-    '''
-    
-
     conn = None
     try:
         conn = await init_db(db_config)

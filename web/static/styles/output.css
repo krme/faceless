@@ -4910,22 +4910,12 @@ input {
   transition-property: none !important;
 }
 
-.transition-all {
-  transition-property: all !important;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
-  transition-duration: 150ms !important;
-}
-
 .duration-10000 {
   transition-duration: 10000ms !important;
 }
 
 .duration-300 {
   transition-duration: 300ms !important;
-}
-
-.duration-0 {
-  transition-duration: 0s !important;
 }
 
 .ease-linear {
