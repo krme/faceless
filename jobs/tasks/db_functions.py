@@ -3,9 +3,10 @@ from pydantic import BaseModel
 import os
 import asyncpg
 import ssl
-from prefect import task, get_run_logger
 from uuid import UUID
 import librosa
+
+from jobs.custom_types.records import Attempt, User
 
 
 def convert_blob_to_librosa(blob):
@@ -71,22 +72,32 @@ async def close_db(conn):
     print("Database connection closed")
 
 
-@task
 async def get_user(db_config: DBConfig, rid: UUID):
-    # logger = get_run_logger()
+    # 
     conn = None
     recordings = []
     try:
-        logger = get_run_logger()
+        
         conn = await init_db(db_config)
 
-        query = "SELECT id, rid, recording_1, recording_2, recording_3 FROM DB.user WHERE rid = $1;"
+        query = """
+            SELECT
+                id,
+                rid,
+                recording_1,
+                recording_2,
+                recording_3
+            FROM "user"
+            WHERE rid = $1;"""
         query_result = await conn.fetch(query, rid)
         # add convert_blob_to_librosa
-        recordings.append(recordings.from_json_map(query_result))
+        user = User.from_json_map(query_result)
+
+        recordings = [convert_blob_to_librosa(recording) for recording in user.get_recordings()]
+
+        # recordings.append(recordings.from_json_map(query_result))
 
     except Exception as e:
-        logger.error(f"Error while getting user data: {str(e)}")
         raise Exception(f"Error while getting user data: {str(e)}")
     finally:
         if conn:
@@ -95,73 +106,67 @@ async def get_user(db_config: DBConfig, rid: UUID):
     return recordings
 
 
-@task
 async def get_latest_identification_attempt(db_config: DBConfig, rid: UUID):
-    # logger = get_run_logger()
     conn = None
-    recordings = []
     try:
-        logger = get_run_logger()
         conn = await init_db(db_config)
 
-        query = "SELECT id, rid, recording FROM DB.identification_attempt WHERE rid = $1 ORDER BY created_at DESC LIMIT 1;"
+        query = """
+            SELECT
+                id,
+                rid,
+                recording
+            FROM identification_attempt
+            WHERE rid = $1
+            ORDER BY created_at DESC
+            LIMIT 1;
+        """
         query_result = await conn.fetch(query, rid)
-        recordings.append(recordings.from_json_map(query_result))
         # extract binary file from json
         # reconstruct adio file from binary
         # add convert_blob_to_librosa
+        attempt = Attempt.from_json_map(query_result)
 
+        recording = convert_blob_to_librosa(attempt.recording)
 
     except Exception as e:
-        logger.error(f"Error while getting user data: {str(e)}")
         raise Exception(f"Error while getting user data: {str(e)}")
     finally:
         if conn:
             await close_db(conn)
-            print("Database connection closed successfully")
-    return recordings
+    return recording
 
 
-@task
-async def update_user(db_config: DBConfig, rid: UUID, recordings_normalised, mfcc):
+async def update_user(db_config: DBConfig, rid: UUID, recordings_normalised, mfcc: List[float]):
     conn = None
     try:
-        logger = get_run_logger()
         conn = await init_db(db_config)
 
         insert_query = """
             UPDATE
                 "user"
             SET
-                recording_1_normalised = $1,
-                recording_2_normalised = $2,
-                recording_3_normalised = $3,
                 recording_1_mfcc = $4,
                 recording_2_mfcc = $5,
                 recording_3_mfcc = $6,
                 updated_at = NOW()
-            WHERE
+            WHERE 
                 rid=$7;
         """
 
         # Einfügen in die Datenbank
-        await conn.executemany(insert_query, recordings_normalised[0],recordings_normalised[1],recordings_normalised[2], mfcc[0],mfcc[1],mfcc[2],rid)
-        logger.info(f"3 recordings_normalised and mfccs inserted successfully")
-
+        await conn.executemany(insert_query, mfcc[0],mfcc[1],mfcc[2],rid)
     except Exception as e:
-        logger.error(f"Error while updating user data: {str(e)}")
         raise Exception(f"Error while updating user data: {str(e)}")
     finally:
         if conn:
             await close_db(conn)
-            print("Database connection closed successfully")
 
 
-@task
-async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, recording_normalised, mfcc):
+async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, identified: bool, mfcc: List[float]):
     conn = None
     try:
-        logger = get_run_logger()
+        
         conn = await init_db(db_config)
 
         # SQL-Query zur Einfügung der Embeddings in die Datenbank
@@ -169,33 +174,29 @@ async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, r
             UPDATE
                 "user"
             SET
-                recording_normalised = $1,
-                recording_mfcc = $2,
+                recording_mfcc = $1,
+                identified = $2,
                 updated_at = NOW()
             WHERE
                 rid=$3;
         """
 
         # Einfügen in die Datenbank
-        await conn.executemany(insert_query, recording_normalised, mfcc, rid)
-        logger.info(f"1 recording_normalised and mfcc inserted successfully")
+        await conn.executemany(insert_query, mfcc, identified, rid)
 
     except Exception as e:
-        logger.error(f"Error while updating user data: {str(e)}")
         raise Exception(f"Error while updating user data: {str(e)}")
     finally:
         if conn:
             await close_db(conn)
-            print("Database connection closed successfully")
 
 
-@task
 async def get_vector_dist(db_config: DBConfig, rid: UUID, recording_mfcc: List[float]):
     '''
     Gets chunks by ordered by vector distance and with a distance threshhold.
     The limit of chunks is used per doc_hash.
     '''
-    logger = get_run_logger()
+    
 
     conn = None
     try:
@@ -216,10 +217,8 @@ async def get_vector_dist(db_config: DBConfig, rid: UUID, recording_mfcc: List[f
         query_result = await conn.fetch(query, rid, recording_mfcc)
 
     except Exception as e:
-        logger.error(f"Error while getting chunks by vector: {str(e)}")
         raise Exception(f"Error while getting chunks by vector: {str(e)}")
     finally:
         if conn:
             await close_db(conn)
-            logger.info("Database connection closed successfully")
     return query_result

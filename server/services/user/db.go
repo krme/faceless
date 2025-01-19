@@ -86,8 +86,8 @@ func (r UserDBHandler) InsertUser(user *model.User) (*model.User, error) {
 	newUser := &model.User{}
 
 	row := r.db.Instance.QueryRow(
-		`INSERT INTO user ( id, rid, recording_1, recording_2, recording_3, recording_1_normalised, recording_2_normalised, recording_3_normalised, recording_1_mfcc, recording_2_mfcc, recording_3_mfcc )
-			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		`INSERT INTO "user" (rid)
+			VALUES ($1)
 		RETURNING
 			id,
 			rid,
@@ -97,11 +97,8 @@ func (r UserDBHandler) InsertUser(user *model.User) (*model.User, error) {
 			recording_1_normalised,
 			recording_2_normalised,
 			recording_3_normalised,
-			recording_1_mfcc,
-			recording_2_mfcc,
-			recording_3_mfcc,
 			created_at,
-			updated_at`,
+			updated_at;`,
 		user.RID,
 	)
 
@@ -114,9 +111,6 @@ func (r UserDBHandler) InsertUser(user *model.User) (*model.User, error) {
 		&newUser.Recording1Normalised,
 		&newUser.Recording2Normalised,
 		&newUser.Recording3Normalised,
-		&newUser.Recording1Mfcc,
-		&newUser.Recording2Mfcc,
-		&newUser.Recording3Mfcc,
 		&newUser.CreatedAt,
 		&newUser.UpdatedAt,
 	)
@@ -140,12 +134,9 @@ func (r UserDBHandler) UpdateUser(user *model.User) (*model.User, error) {
 			recording_1_normalised = $4,
 			recording_2_normalised = $5,
 			recording_3_normalised = $6,
-			recording_1_mfcc = $7,
-			recording_2_mfcc = $8,
-			recording_3_mfcc = $9,
 			updated_at = CURRENT_TIMESTAMP
 		WHERE
-			rid = $10
+			rid = $7
 		RETURNING
 			id,
 			rid,
@@ -155,9 +146,6 @@ func (r UserDBHandler) UpdateUser(user *model.User) (*model.User, error) {
 			recording_1_normalised,
 			recording_2_normalised,
 			recording_3_normalised,
-			recording_1_mfcc,
-			recording_2_mfcc,
-			recording_3_mfcc,
 			created_at,
 			updated_at`,
 		user.Recording1,
@@ -166,9 +154,6 @@ func (r UserDBHandler) UpdateUser(user *model.User) (*model.User, error) {
 		user.Recording1Normalised,
 		user.Recording2Normalised,
 		user.Recording3Normalised,
-		user.Recording1Mfcc,
-		user.Recording2Mfcc,
-		user.Recording3Mfcc,
 		user.RID,
 	)
 
@@ -181,9 +166,6 @@ func (r UserDBHandler) UpdateUser(user *model.User) (*model.User, error) {
 		&userUpdated.Recording1Normalised,
 		&userUpdated.Recording2Normalised,
 		&userUpdated.Recording3Normalised,
-		&userUpdated.Recording1Mfcc,
-		&userUpdated.Recording2Mfcc,
-		&userUpdated.Recording3Mfcc,
 		&userUpdated.CreatedAt,
 		&userUpdated.UpdatedAt,
 	)
@@ -220,9 +202,6 @@ func (r UserDBHandler) SelectUser(rid uuid.UUID) (*model.User, error) {
 			recording_1_normalised,
 			recording_2_normalised,
 			recording_3_normalised,
-			recording_1_mfcc,
-			recording_2_mfcc,
-			recording_3_mfcc,
 			created_at,
 			updated_at
 		FROM
@@ -240,9 +219,6 @@ func (r UserDBHandler) SelectUser(rid uuid.UUID) (*model.User, error) {
 		&user.Recording1Normalised,
 		&user.Recording2Normalised,
 		&user.Recording3Normalised,
-		&user.Recording1Mfcc,
-		&user.Recording2Mfcc,
-		&user.Recording3Mfcc,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
@@ -266,9 +242,6 @@ func (r UserDBHandler) SelectAllUsers(lastId int, entries int) ([]*model.User, e
 			recording_1_normalised,
 			recording_2_normalised,
 			recording_3_normalised,
-			recording_1_mfcc,
-			recording_2_mfcc,
-			recording_3_mfcc,
 			created_at,
 			updated_at
 		FROM
@@ -304,9 +277,6 @@ func (r UserDBHandler) SelectAllUsers(lastId int, entries int) ([]*model.User, e
 			&user.Recording1Normalised,
 			&user.Recording2Normalised,
 			&user.Recording3Normalised,
-			&user.Recording1Mfcc,
-			&user.Recording2Mfcc,
-			&user.Recording3Mfcc,
 			&user.CreatedAt,
 			&user.UpdatedAt,
 		)
@@ -335,9 +305,6 @@ func (r UserDBHandler) SelectAllUsersBySearch(search string, lastId int, entries
 			recording_1_normalised,
 			recording_2_normalised,
 			recording_3_normalised,
-			recording_1_mfcc,
-			recording_2_mfcc,
-			recording_3_mfcc,
 			created_at,
 			updated_at
 		FROM "user" 
@@ -375,9 +342,6 @@ func (r UserDBHandler) SelectAllUsersBySearch(search string, lastId int, entries
 			&user.Recording1Normalised,
 			&user.Recording2Normalised,
 			&user.Recording3Normalised,
-			&user.Recording1Mfcc,
-			&user.Recording2Mfcc,
-			&user.Recording3Mfcc,
 			&user.CreatedAt,
 			&user.UpdatedAt,
 		)
