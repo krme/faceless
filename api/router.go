@@ -46,7 +46,7 @@ func StartServer() {
 	echo.HTTPErrorHandler = handler.HandleErrorView
 	echo.Logger.SetLevel(log.DEBUG)
 	echo.Logger.Fatal(
-		echo.Start(fmt.Sprintf(":%v", helper.GetEnvVariable("PORT"))),
+		echo.Start(fmt.Sprintf(":%v", helper.GetEnvVariable("SERVER_PORT"))),
 	)
 
 	<-ctx.Done()
