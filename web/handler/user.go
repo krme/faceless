@@ -53,8 +53,12 @@ func (r *UserView) HandleShowResultPage(c echo.Context) error {
 	return render(c, screens.ShowResultReady())
 }
 
-func (r *UserView) HandleShowResult(c echo.Context) error {
-	return render(c, screens.ShowResult())
+func (r *UserView) HandleShowResultSuccess(c echo.Context) error {
+	return render(c, screens.ShowResultSuccess())
+}
+
+func (r *UserView) HandleShowResultFailure(c echo.Context) error {
+	return render(c, screens.ShowResultFailure())
 }
 
 func (r *UserView) HandleAuthenticationWaiting(c echo.Context) error {

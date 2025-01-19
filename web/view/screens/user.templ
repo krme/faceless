@@ -24,9 +24,55 @@ templ User(user *model.User) {
 	}
 }
 
-templ ShowResult() {
+templ ShowResultSuccess() {
 	@layout.Index("Final Result") {
-		<div>TODO</div>
+		<div class="grow flex flex-col self-stretch bg-[#F0F5EE] justify-center items-center">
+			<div class="flex-col justify-start items-center gap-4 flex">
+				<div class="py-2 flex-col justify-center items-center gap-1 flex">
+					<div class="justify-center items-center gap-2.5 inline-flex">
+						<div class="text-[#150D1D] text-2xl font-semibold leading-loose text-center">Success</div>
+					</div>
+					<div class="text-zinc-500 text-sm font-normal leading-tight text-center">✨ This was really you Voice ✨</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			const jsConfetti = new JSConfetti()
+			jsConfetti.addConfetti({
+				// emojis: ['🌈', '⚡️', '💥', '✨', '💫', '🌸'],
+				confettiColors: [
+					'#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd', '#f9bec7',
+				],
+				emojiSize: 30,
+				confettiNumber: 500,
+			})
+		</script>
+	}
+}
+
+templ ShowResultFailure() {
+	@layout.Index("Final Result") {
+		<div class="grow flex flex-col self-stretch bg-[#F0F5EE] justify-center items-center">
+			<div class="flex-col justify-start items-center gap-4 flex">
+				<div class="py-2 flex-col justify-center items-center gap-1 flex">
+					<div class="justify-center items-center gap-2.5 inline-flex">
+						<div class="text-[#150D1D] text-2xl font-semibold leading-loose text-center">FRAUD</div>
+					</div>
+					<div class="text-zinc-500 text-sm font-normal leading-tight text-center">😱 This was not your voice 😱</div>
+				</div>
+			</div>
+		</div>
+		// <script>
+		// 	const jsConfetti = new JSConfetti()
+		// 	jsConfetti.addConfetti({
+		// 		// emojis: ['🌈', '⚡️', '💥', '✨', '💫', '🌸'],
+		// 		confettiColors: [
+		// 			'#ff0a54', '#ff477e', '#ff7096', '#ff85a1', '#fbb1bd', '#f9bec7',
+		// 		],
+		// 		emojiSize: 30,
+		// 		confettiNumber: 500,
+		// 	})
+		// </script>
 	}
 }
 
@@ -42,9 +88,8 @@ templ ShowResultReady() {
 				</div>
 				<div class="h-9 flex-col justify-center items-center gap-6 flex w-full place-self-center">
 					<div class=" h-9 flex-col justify-center items-center gap-2 flex w-56 place-self-center">
-						<a class="self-stretch h-9 px-4 py-2  rounded-md shadow-sm justify-center items-center gap-1 inline-flex button_primary cursor-pointer place-self-center" href="/user/showResult">
+						<a class="self-stretch h-9 px-4 py-2  rounded-md shadow-sm justify-center items-center gap-1 inline-flex button_primary cursor-pointer place-self-center" href="/user/showResultSuccess">
 							<div class="text-[#F9F9F9] font-bold">Go to</div>
-							// <img class="w-[21px] h-[21px] rounded-[3px] border border-black/20" src="https://via.placeholder.com/21x21"/>
 						</a>
 					</div>
 				</div>
@@ -286,7 +331,7 @@ templ OnboardingStart() {
 				</div>
 				<div class="h-9 flex-col justify-center items-center gap-6 flex w-full place-self-center">
 					<div class=" h-9 flex-col justify-center items-center gap-2 flex w-56 place-self-center">
-						<a class="self-stretch h-9 px-4 py-2  rounded-md shadow-sm justify-center items-center gap-1 inline-flex button_primary cursor-pointer place-self-center" href="/user/onboardingRecording">
+						<a class="self-stretch h-9 px-4 py-2  rounded-md shadow-sm justify-center items-center gap-1 inline-flex button_primary cursor-pointer place-self-center" href="/user/onboardingRecording/1">
 							<div class="text-[#F9F9F9] font-bold">Go to</div>
 							// <img class="w-[21px] h-[21px] rounded-[3px] border border-black/20" src="https://via.placeholder.com/21x21"/>
 						</a>
@@ -368,7 +413,7 @@ templ Sidebar() {
 				<div class="justify-start items-start gap-4 inline-flex">
 					<div class="self-stretch flex-col justify-center items-center "></div>
 					<div class="flex-col justify-start items-start gap-1 inline-flex">
-						<a href="/user/onboardingRecording" class="text-[#F0F5EE] text-2xl font-semibold cursor-pointer">
+						<a href="/user/onboardingRecording/1" class="text-[#F0F5EE] text-2xl font-semibold cursor-pointer">
 							<div class="text-[#F0F5EE] text-2xl font-semibold">Voice Recordings</div>
 							<div class="text-[#F0F5EE] text-sm font-normal">Record 3 simple sentences to get verified</div>
 						</a>

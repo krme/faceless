@@ -97,7 +97,8 @@ func (r *Router) RegisterRoutes() {
 	r.echo.GET("/user/Test", m.ViewAuthMiddleware(userView.Test))
 	r.echo.GET("/user/waitforauthentication", m.ViewAuthMiddleware(userView.HandleAuthenticationWaiting))
 	r.echo.GET("/user/showResultReady", m.ViewAuthMiddleware(userView.HandleShowResultPage))
-	r.echo.GET("/user/showResult", m.ViewAuthMiddleware(userView.HandleShowResult))
+	r.echo.GET("/user/showResultSuccess", m.ViewAuthMiddleware(userView.HandleShowResultSuccess))
+	r.echo.GET("/user/showResultFailure", m.ViewAuthMiddleware(userView.HandleShowResultFailure))
 
 	// api
 	r.echo.POST("/user/createReferenceRecording/:step", userView.HandleCreateReferenceRecording)
