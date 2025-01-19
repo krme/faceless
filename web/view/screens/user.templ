@@ -217,7 +217,7 @@ templ RecordSentence(sentence string) {
 					<!-- TODO: add select state feature (if selected ) - check -->
 					<!-- TODO: add recording feature -->
 					<!-- TODO: Add logic for sending requests to server - where are the endpoints? -->
-					<div class="flex gap-4 w-full">
+					<div class="flex gap-4 w-full items-center">
 						<div class="flex gap-2 my-5">
 							<button
 								id="restartButton1"
@@ -234,7 +234,10 @@ templ RecordSentence(sentence string) {
 									remove .text-white from next <button/>
 									remove @disabled from #recordButton
 									add .hidden to #sparkle
-									add .hidden to me"
+									add .hidden to me
+									add .transition-none to #progressBarFill
+									remove .w-full from #progressBarFill
+									add .w-0 to #progressBarFill"
 							>
 								<span class="material-icons white text-xxl">restart_alt</span>
 							</button>
@@ -253,6 +256,9 @@ templ RecordSentence(sentence string) {
 										put 'stop' into .material-icons in me
 										remove .hidden from previous <button/>
 										add .inline-flex to previous <button/>
+										remove .w-0 from #progressBarFill
+										remove .transition-none from #progressBarFill
+										add .w-full to #progressBarFill
 									else
 										set $isRecording to false
 										remove .bg-red-600 from me
@@ -263,13 +269,17 @@ templ RecordSentence(sentence string) {
 										put 'check' into .material-icons in me
 										add .text-white to me
 										remove .hidden from #sparkle
+										add .transition-none to #progressBarFill
 									end"
 							>
 								<span class="material-icons text-xxl">mic</span>
 							</button>
 						</div>
-						<div class="flex flex-col items-center justify-center w-full">
-							<div class="w-full border-t border_primary my-5"></div>
+						<div class="relative h-[3px] w-full overflow-visible">
+							<div class="absolute h-[2px] w-full flex flex-col justify-end">
+								<div class="h-[1px] w-full bg-indigo-300"></div>
+							</div>
+							<div id="progressBarFill" class="absolute left-0 h-[3px] w-0 bg-indigo-500 rounded-lg duration-10000 ease-linear"></div>
 						</div>
 					</div>
 					<input
@@ -294,15 +304,26 @@ templ RecordSentence(sentence string) {
 								add .hidden to #restartButton1
 								add @disabled to me
 								add .hidden to #sparkle
+								remove .w-full from #progressBarFill
+								add .w-0 to #progressBarFill
 							if $step is 3
-									put 'Evaluate' into @value of me"
+								put 'Evaluate' into @value of me"
 					/>
 					<p class="text-indigo-500 hidden" id="sparkle">✨ Successfully recorded!</p>
 				</div>
 			</div>
 		</div>
 	</div>
-	<script>
-		let recording = 'false'
-	</script>
+	<style>
+		#animated-border {
+			border-top: 2px solid #000; /* Initial border */
+			width: 0;
+			transition: width 10s, border-top-width 10s;
+		}
+
+		#animated-border.animate {
+			width: 100%;
+			border-top-width: 5px; /* Thicker border */
+		}
+	</style>
 }

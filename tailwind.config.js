@@ -16,6 +16,9 @@ module.exports = {
         serif: ['Merriweather', 'serif'],
         icons: ['MaterialIcons'],
       },
+      transitionDuration: {
+        '10000': '10000ms',
+      }
     },
   },
   plugins: [
