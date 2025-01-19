@@ -68,12 +68,13 @@ async def identify(request: IdentifyRequest):
 
         dist = await get_vector_dist(dbConfig, request.user_rid, mfcc)
 
+        logger.info(f"distance of identification: {dist}")
+
         # TODO adjust threshold
         identified = False
         if dist < 50:
             identified = True
 
-        logger.info(identified)
         await update_latest_identification_attempt(dbConfig, attempt.rid, identified, mfcc)
     except Exception as e:
         logger.error(str(e))
