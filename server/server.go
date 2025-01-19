@@ -20,6 +20,8 @@ type Server struct {
 	// services
 	AuthService *auth.AuthService
 	UserService *user.UserService
+	// jobs
+	JobsPort string
 }
 
 func NewServer() (*Server, error) {
@@ -48,5 +50,7 @@ func NewServer() (*Server, error) {
 		// services
 		AuthService: auth.NewAuthService(sessionStore),
 		UserService: user.NewUserService(),
+		// jobs
+		JobsPort: helper.GetEnvVariableWithoutDelete("JOBS_PORT"),
 	}, nil
 }

@@ -3,7 +3,6 @@ package user
 import (
 	"bytes"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"ht/helper"
 	"ht/model"
@@ -50,7 +49,7 @@ func NewUserService() *UserService {
 	newUserService := &UserService{
 		logger:   logger,
 		userDb:   userDb,
-		jobsPort: helper.GetEnvVariable("JOBS_PORT"),
+		jobsPort: helper.GetEnvVariableWithoutDelete("JOBS_PORT"),
 	}
 
 	return newUserService
@@ -118,16 +117,7 @@ func (r *UserService) CreateReferenceRecording(c echo.Context) (*model.User, err
 		return nil, err
 	}
 
-	values := map[string]string{"rid": user.RID.String()}
-	postBody, _ := json.Marshal(values)
-
-	resp, err := http.Post(fmt.Sprintf("http://localhost:%v/jobs/processReferenceRecordings", r.jobsPort), "application/json", bytes.NewBuffer(postBody))
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	_, err = io.ReadAll(resp.Body)
+	_, err = helper.StartJob(fmt.Sprintf("http://localhost:%v/jobs/processReferenceRecordings", r.jobsPort), map[string]string{"rid": user.RID.String()})
 	if err != nil {
 		return nil, err
 	}

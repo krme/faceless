@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
+	"ht/helper"
 	"ht/model"
 	"ht/server"
 	"ht/web/view/screens"
@@ -38,7 +40,18 @@ func (r *UserView) HandleOnboardingRecording(c echo.Context) error {
 		return err
 	}
 
-	return render(c, screens.OnboardingRecording(&model.User{CreatedAt: time.Now()}, currentStep))
+	bytes, err := helper.StartJob(fmt.Sprintf("http://localhost:%v/jobs/createSentence", r.server.JobsPort), map[string]string{})
+	if err != nil {
+		return err
+	}
+
+	sentence := ""
+	err = json.Unmarshal(bytes, &sentence)
+	if err != nil {
+		return err
+	}
+
+	return render(c, screens.OnboardingRecording(sentence, currentStep))
 }
 
 func (r *UserView) HandleOnboardingSuccess(c echo.Context) error {

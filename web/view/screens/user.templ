@@ -119,10 +119,10 @@ templ OnboardingStart() {
 	}
 }
 
-templ OnboardingRecording(user *model.User, step int) {
+templ OnboardingRecording(sentence string, step int) {
 	@layout.Index("Reference recording") {
 		@Sidebar()
-		@RecordSentence("A sentient toaster serenaded the moon in Morse code.")
+		@RecordSentence(sentence)
 	}
 }
 
@@ -213,7 +213,7 @@ templ RecordSentence(sentence string) {
 			<div class="min-w-0 flex-1">
 				<div class="flex flex-col items-center justify-center">
 					<h1 id="stepHeader"></h1>
-					<span class="text-gray-600">"{ sentence }"</span>
+					<span class="text-gray-600">{ sentence }</span>
 					<!-- TODO: add select state feature (if selected ) - check -->
 					<!-- TODO: add recording feature -->
 					<!-- TODO: Add logic for sending requests to server - where are the endpoints? -->
