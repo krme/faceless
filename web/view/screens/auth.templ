@@ -23,24 +23,37 @@ templ CenterCard(title string, hxPost string) {
 
 templ Register() {
 	@layout.Index("Register") {
-		@CenterCard("Register", "/auth/registerWithEmail") {
-			<div class="mb-4">
-				@components.InputText("Email", "Your email", "email", "email@example.com", "email", "")
-			</div>
-			<div class="mb-6">
-				@components.InputPassword("Password", "password", "password")
-			</div>
-			<input
-				class="w-full bg-indigo-700 hover:bg-indigo-500 text-white font-bold p-2 my-2 rounded-lg"
-				type="submit"
-				value="Register"
-			/>
-			<div class="flex flex-row justify-center">
-				<a class="inline-block align-baseline font-medium text-sm text-indigo-700 hover:text-indigo-500" href="/login">
-					Already registered?
-				</a>
-			</div>
-		}
+		@Sidebar()
+		<div class="grow flex flex-col self-stretch bg-[#F0F5EE] justify-center items-center">
+			@components.Form(components.FormConf{HxPost: "/auth/registerWithEmail", Class: "mb-4 w-96"}) {
+				<h1 class="text-2xl font-bold pb-4">
+					Sign up now
+				</h1>
+				<div class="mb-4">
+					@components.InputText("Email", "Your email", "email", "email@example.com", "email", "")
+				</div>
+				<div class="mb-6">
+					@components.InputPassword("Password", "password", "password")
+				</div>
+				<div>
+					<span class="text-zinc-500 text-sm font-normal font-['Inter'] leading-tight">By clicking continue, you agree to our<br/></span>
+					<span class="text-zinc-500 text-sm font-normal font-['Inter'] underline leading-tight">Terms of Service</span>
+					<span class="text-zinc-500 text-sm font-normal font-['Inter'] leading-tight">and </span>
+					<span class="text-zinc-500 text-sm font-normal font-['Inter'] underline leading-tight">Privacy Policy</span>
+					<span class="text-zinc-500 text-sm font-normal font-['Inter'] leading-tight">.</span>
+				</div>
+				<input
+					class="w-full button_primary text-white font-bold p-2 my-2 rounded-lg cursor-pointer"
+					type="submit"
+					value="Sign up"
+				/>
+				<div class="flex flex-row justify-center">
+					<a class="inline-block align-baseline font-medium text-sm text-[#130D1D] hover:text-[#2f2047] cursor-pointer" href="/login">
+						Already registered?
+					</a>
+				</div>
+			}
+		</div>
 	}
 }
 
@@ -71,27 +84,33 @@ templ VerifyEmail() {
 
 templ Login() {
 	@layout.Index("Login") {
-		@CenterCard("Login", "/auth/loginWithEmail") {
-			<div class="mb-4">
-				@components.InputText("Email", "Your email", "email", "email@example.com", "email", "")
-			</div>
-			<div class="mb-6">
-				@components.InputPassword("Password", "password", "password")
-				<a class="mt-2 inline-block align-baseline font-medium text-sm text-indigo-700 hover:text-indigo-500 dark:text-indigo-500 hover:dark:text-indigo-400" href="/forgotPassword">
-					Forgot Password?
-				</a>
-			</div>
-			<input
-				class="w-full bg-indigo-700 hover:bg-indigo-700 text-white font-bold p-2 my-2 rounded-lg"
-				type="submit"
-				value="Login"
-			/>
-			<div class="flex flex-row justify-center">
-				<div class="text-sm font-medium text-gray-500 dark:text-gray-300">
-					Not registered? <a href="/register" class="text-indigo-700 hover:text-indigo-500 dark:text-indigo-500 hover:dark:text-indigo-400">Create account</a>
+		@Sidebar()
+		<div class="grow flex flex-col self-stretch bg-[#F0F5EE] justify-center items-center">
+			@components.Form(components.FormConf{HxPost: "/auth/loginWithEmail", Class: "mb-4 w-96"}) {
+				<h1 class="text-2xl font-bold pb-4">
+					Login
+				</h1>
+				<div class="mb-4">
+					@components.InputText("Email", "Your email", "email", "email@example.com", "email", "")
 				</div>
-			</div>
-		}
+				<div class="mb-6">
+					@components.InputPassword("Password", "password", "password")
+					<a class="mt-2 inline-block align-baseline font-medium text-sm text-[#130D1D] hover:text-[#2f2047] dark:text-indigo-500 hover:dark:text-indigo-400" href="/forgotPassword">
+						Forgot Password?
+					</a>
+				</div>
+				<input
+					class="w-full button_primary text-white font-bold p-2 my-2 rounded-lg cursor-pointer"
+					type="submit"
+					value="Login"
+				/>
+				<div class="flex flex-row justify-center">
+					<div class="text-sm font-medium text-gray-500 dark:text-gray-300">
+						Not registered? <a href="/register" class="text-indigo-700 hover:text-indigo-500 dark:text-indigo-500 hover:dark:text-indigo-400">Create account</a>
+					</div>
+				</div>
+			}
+		</div>
 	}
 }
 

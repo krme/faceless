@@ -51,19 +51,10 @@ func HandleResetPasswordView(c echo.Context) error {
 	return render(c, screens.ResetPassword())
 }
 
-func (r *AuthView) HandleAccount(c echo.Context) error {
-	auth, err := r.server.AuthService.GetAuth(c)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, err)
-	}
-
-	return render(c, screens.Account(auth))
-}
-
-// auth handler
+// api handler
 func (r *AuthView) HandleRegisterWithEmail(c echo.Context) error {
 	helper.SetContext(c, helper.ProjectRidKey, uuid.UUID{})
-	err := r.server.AuthService.RegisterWithEmail(c)
+	err := r.server.AuthService.HandleRegisterWithEmail(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
@@ -75,7 +66,7 @@ func (r *AuthView) HandleRegisterWithEmail(c echo.Context) error {
 
 func (r *AuthView) HandleRequestNewEmailVerificationCode(c echo.Context) error {
 	helper.SetContext(c, helper.ProjectRidKey, uuid.UUID{})
-	err := r.server.AuthService.RequestNewEmailVerificationCode(c)
+	err := r.server.AuthService.HandleRequestNewEmailVerificationCode(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
@@ -85,31 +76,31 @@ func (r *AuthView) HandleRequestNewEmailVerificationCode(c echo.Context) error {
 
 func (r *AuthView) HandleVerifyEmail(c echo.Context) error {
 	helper.SetContext(c, helper.ProjectRidKey, uuid.UUID{})
-	err := r.server.AuthService.VerifyEmail(c)
+	err := r.server.AuthService.HandleVerifyEmail(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	c.Response().Header().Add("HX-Redirect", "/account")
+	c.Response().Header().Add("HX-Redirect", "/user/onboardingStart")
 
 	return c.NoContent(http.StatusOK)
 }
 
 func (r *AuthView) HandleLoginWithEmail(c echo.Context) error {
 	helper.SetContext(c, helper.ProjectRidKey, uuid.UUID{})
-	err := r.server.AuthService.LoginWithEmail(c)
+	err := r.server.AuthService.HandleLoginWithEmail(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
 
-	c.Response().Header().Add("HX-Redirect", "/account")
+	c.Response().Header().Add("HX-Redirect", "/user/onboardingStart")
 
 	return c.NoContent(http.StatusOK)
 }
 
 func (r *AuthView) HandleRequestPasswordReset(c echo.Context) error {
 	helper.SetContext(c, helper.ProjectRidKey, uuid.UUID{})
-	err := r.server.AuthService.RequestPasswordReset(c)
+	err := r.server.AuthService.HandleRequestPasswordReset(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
@@ -121,7 +112,7 @@ func (r *AuthView) HandleRequestPasswordReset(c echo.Context) error {
 
 func (r *AuthView) HandleResetPassword(c echo.Context) error {
 	helper.SetContext(c, helper.ProjectRidKey, uuid.UUID{})
-	err := r.server.AuthService.ResetPassword(c)
+	err := r.server.AuthService.HandleResetPassword(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
@@ -133,7 +124,7 @@ func (r *AuthView) HandleResetPassword(c echo.Context) error {
 
 func (r *AuthView) HandleLogout(c echo.Context) error {
 	helper.SetContext(c, helper.ProjectRidKey, uuid.UUID{})
-	err := r.server.AuthService.Logout(c)
+	err := r.server.AuthService.HandleLogout(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
