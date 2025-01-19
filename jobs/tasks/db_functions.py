@@ -1,19 +1,29 @@
 import io
+import json
 from typing import List
+import numpy as np
 from pydantic import BaseModel
 import os
 import asyncpg
 from uuid import UUID
 import librosa
+import soundfile as sf
+from pydub import AudioSegment
 
 from custom_types.user import User
 from custom_types.attempt import Attempt
 
 
 def convert_blob_to_librosa(blob):
-    binary_stream = io.BytesIO(blob)
-    # data = binary_stream.read()
-    y, sr = librosa.load(binary_stream, sr=None) 
+    if not blob:
+        return (None, None)
+    with open('temp.webm', 'ab') as f:
+        f.write(blob)
+        webm: AudioSegment = AudioSegment.from_file('temp.webm', format='webm')
+        webm.export('temp.wav', format='wav')
+        y, sr = librosa.load('temp.wav', sr=None)
+        # bytes = io.BytesIO(blob)
+        # y, sr = librosa.load(bytes, sr=None) 
     return y, sr
 
 
@@ -79,7 +89,7 @@ async def get_user(db_config: DBConfig, rid: UUID):
             WHERE rid = $1;"""
         query_result = await conn.fetch(query, rid)
         # add convert_blob_to_librosa
-        user = User.from_json_map(query_result[0])
+        user: User = User.from_json_map(query_result[0])
 
         recordings = [convert_blob_to_librosa(recording) for recording in user.get_recordings()]
 
@@ -130,20 +140,30 @@ async def update_user(db_config: DBConfig, rid: UUID, mfcc: List[float]):
     try:
         conn = await init_db(db_config)
 
+        mfcc_1 = np.zeros(40).tolist()
+        mfcc_2 = np.zeros(40).tolist()
+        mfcc_3 = np.zeros(40).tolist()
+        if len(mfcc[0].tolist()) == 40:
+            mfcc_1 = mfcc[0].tolist()
+        if len(mfcc[1].tolist()) == 40:
+            mfcc_2 = mfcc[1].tolist()
+        if len(mfcc[2].tolist()) == 40:
+            mfcc_3 = mfcc[2].tolist()
+
         insert_query = """
             UPDATE
                 "user"
             SET
-                recording_1_mfcc = $4,
-                recording_2_mfcc = $5,
-                recording_3_mfcc = $6,
+                recording_1_mfcc = $1,
+                recording_2_mfcc = $2,
+                recording_3_mfcc = $3,
                 updated_at = NOW()
             WHERE 
-                rid=$7;
+                rid=$4;
         """
 
         # Einfügen in die Datenbank
-        await conn.executemany(insert_query, mfcc[0],mfcc[1],mfcc[2],rid)
+        await conn.execute(insert_query, json.dumps(mfcc_1), json.dumps(mfcc_2), json.dumps(mfcc_3), rid)
     except Exception as e:
         raise Exception(f"Error while updating user data: {str(e)}")
     finally:

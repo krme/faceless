@@ -26,16 +26,16 @@ async def process_reference_recordings(request: ProcessReferenceRecordingsReques
         recordings = await get_user(dbConfig, request.rid)
 
         preprocessed_recordings = []
-        for recording in recordings:
-            preprocessed_recordings.append(preprocess_recording(recording))
+        for (recording, sr) in recordings:
+            preprocessed_recordings.append(preprocess_recording(recording, sr))
 
         logger.info(preprocessed_recordings)
 
         mfccs = []
-        for recording in preprocessed_recordings:
-            mfccs.append(extract_features(recording))
+        for (recording, sr) in preprocessed_recordings:
+            mfccs.append(extract_features(recording, sr))
 
-        logger.info(mfccs)
+        logger.info("mfccs")
         
         await update_user(dbConfig, request.rid, mfccs)
     except Exception as e:
