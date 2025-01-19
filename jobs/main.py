@@ -2,11 +2,9 @@ import os
 import logging
 
 import uvicorn
-import httpx
-from fastapi import FastAPI, Request, Response
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Request
 
-import handler.compareAudio as functions
+import jobs.handler.compareAudio as functions
 
 
 logging.basicConfig(level=logging.INFO)
