@@ -6,6 +6,7 @@ import (
 	"ht/helper"
 	"ht/server"
 	"ht/web/view/screens"
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -58,12 +59,14 @@ func (r *IdentificationView) HandleResult(c echo.Context) error {
 
 // api
 func (r *IdentificationView) HandleCreateIdentificationAttempt(c echo.Context) error {
+	log.Println("identificationAttempt")
+
 	_, err := r.server.IdentificationService.CreateIdentificationAttempt(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	c.Response().Header().Add("HX-Redirect", "/user/showResultReady")
+	c.Response().Header().Add("HX-Redirect", "/identification/identificationPending")
 
 	return c.NoContent(http.StatusCreated)
 }

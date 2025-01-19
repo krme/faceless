@@ -150,7 +150,7 @@ templ Identification(sentence string) {
 					var step = getCurrentStep();
 
 					const csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
-					response = await fetch(`/user/identify`, {
+					response = await fetch(`/identification/createIdentificationAttempt`, {
 							method: 'POST',
 							headers: {
 								'X-CSRF-Token': csrfToken,
@@ -163,25 +163,6 @@ templ Identification(sentence string) {
 							alert("Saving audio failed. Please try again.");
 					}
 				};
-			}
-
-			function getCurrentStep() {
-				var step = '1';
-				var splitUrl = window.location.pathname.split('/')
-				if (splitUrl.length > 1) {
-						step = splitUrl.pop();
-				}
-				return step;
-			}
-
-			function navigateToNextStep() {
-				var step = getCurrentStep();
-				var nextStep = parseInt(step) + 1;
-				if (nextStep <= 3) {
-						window.location.replace('/user/onboardingRecording/' + nextStep);
-				} else {
-						window.location.replace('/user/onboardingSuccess');
-				}
 			}
 		</script>
 	}

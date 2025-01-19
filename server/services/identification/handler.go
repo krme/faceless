@@ -76,6 +76,8 @@ func (r *IdentificationAttemptService) CreateIdentificationAttempt(c echo.Contex
 		Recording: buf.Bytes(),
 	}
 
+	log.Printf("identificationAttempt: %v", identificationAttempt)
+
 	data, err := r.identificationAttemptDb.InsertIdentificationAttempt(identificationAttempt)
 	if err != nil {
 		return nil, err

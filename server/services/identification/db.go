@@ -82,8 +82,8 @@ func (r IdentificationAttemptDBHandler) InsertIdentificationAttempt(identificati
 	newIdentificationAttempt := &model.IdentificationAttempt{}
 
 	row := r.db.Instance.QueryRow(
-		`INSERT INTO identification_attempt (user_rid)
-			VALUES ($1)
+		`INSERT INTO identification_attempt (user_rid, recording)
+			VALUES ($1, $2)
 		RETURNING
 			id,
 			rid,
@@ -93,6 +93,7 @@ func (r IdentificationAttemptDBHandler) InsertIdentificationAttempt(identificati
 			created_at,
 			updated_at;`,
 		identificationAttempt.UserRID,
+		identificationAttempt.Recording,
 	)
 
 	err := row.Scan(
@@ -107,6 +108,8 @@ func (r IdentificationAttemptDBHandler) InsertIdentificationAttempt(identificati
 	if err != nil {
 		return nil, err
 	}
+
+	log.Printf("inserted identificationAttempt: %v", newIdentificationAttempt)
 
 	return newIdentificationAttempt, nil
 }
