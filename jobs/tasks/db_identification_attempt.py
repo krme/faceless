@@ -42,9 +42,10 @@ async def get_latest_identification_attempt(db_config: DBConfig, rid: UUID):
             SELECT
                 id,
                 rid,
+                user_rid,
                 recording
             FROM identification_attempt
-            WHERE rid = $1
+            WHERE user_rid = $1
             ORDER BY created_at DESC
             LIMIT 1;
         """
@@ -57,6 +58,7 @@ async def get_latest_identification_attempt(db_config: DBConfig, rid: UUID):
         recording = convert_blob_to_librosa(attempt.recording)
 
     except Exception as e:
+        print(f"Error while getting latest_identification data: {str(e)}")
         raise Exception(f"Error while getting latest_identification data: {str(e)}")
     finally:
         if conn:

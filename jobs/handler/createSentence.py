@@ -23,7 +23,6 @@ def createSentence() -> str:
         ]
     )
 
-    print(chat_response.choices[0].message.content)
     return chat_response.choices[0].message.content
 
 
