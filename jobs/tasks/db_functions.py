@@ -1,18 +1,19 @@
+import io
 from typing import List
 from pydantic import BaseModel
 import os
 import asyncpg
-import ssl
 from uuid import UUID
 import librosa
 
-from custom_types.records import Attempt, User
+from custom_types.user import User
+from custom_types.attempt import Attempt
 
 
 def convert_blob_to_librosa(blob):
-    with open('file.ogg', 'ab') as f:
-        f.write(blob)
-        y, sr = librosa.load(f, sr=None) 
+    binary_stream = io.BytesIO(blob)
+    # data = binary_stream.read()
+    y, sr = librosa.load(binary_stream, sr=None) 
     return y, sr
 
 
@@ -29,7 +30,7 @@ class DBConfig(BaseModel):
 
 def load_db_config() -> DBConfig:
     return DBConfig(
-        user=os.environ.get("PG_USER"),
+        user=os.environ.get("PG_USERNAME"),
         password=os.environ.get("PG_PASSWORD"),
         database=os.environ.get("PG_DATABASE"),
         host=os.environ.get("PG_HOST"),
@@ -78,7 +79,7 @@ async def get_user(db_config: DBConfig, rid: UUID):
             WHERE rid = $1;"""
         query_result = await conn.fetch(query, rid)
         # add convert_blob_to_librosa
-        user = User.from_json_map(query_result)
+        user = User.from_json_map(query_result[0])
 
         recordings = [convert_blob_to_librosa(recording) for recording in user.get_recordings()]
 

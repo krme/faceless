@@ -3,6 +3,8 @@ package user
 import (
 	"bytes"
 	"database/sql"
+	"encoding/json"
+	"fmt"
 	"ht/helper"
 	"ht/model"
 	"ht/server/database"
@@ -19,8 +21,9 @@ import (
 const MAX_SIZE_MB = 5
 
 type UserService struct {
-	logger *log.Logger
-	userDb UserDBHandlerFunctions
+	logger   *log.Logger
+	userDb   UserDBHandlerFunctions
+	jobsPort string
 }
 
 func NewUserService() *UserService {
@@ -45,8 +48,9 @@ func NewUserService() *UserService {
 	}
 
 	newUserService := &UserService{
-		logger: logger,
-		userDb: userDb,
+		logger:   logger,
+		userDb:   userDb,
+		jobsPort: helper.GetEnvVariable("JOBS_PORT"),
 	}
 
 	return newUserService
@@ -110,6 +114,20 @@ func (r *UserService) CreateReferenceRecording(c echo.Context) (*model.User, err
 	}
 
 	data, err := r.userDb.UpdateUser(user)
+	if err != nil {
+		return nil, err
+	}
+
+	values := map[string]string{"rid": user.RID.String()}
+	postBody, _ := json.Marshal(values)
+
+	resp, err := http.Post(fmt.Sprintf("http://localhost:%v/jobs/processReferenceRecordings", r.jobsPort), "application/json", bytes.NewBuffer(postBody))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	_, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

@@ -36,7 +36,6 @@ tailwind:
 	@npx tailwindcss -i ./web/static/styles/index.css -o ./web/static/styles/output.css --watch
 
 python:
-	@export $(grep -v '^#' .env | xargs)
 	@python3 jobs/main.py
 
 # Create DB container

@@ -345,7 +345,7 @@ templ RecordSentence(sentence string) {
 					.mediaDevices
 					.getUserMedia({ audio: true });
 
-			mediaRecorder = new MediaRecorder(micStream)
+			mediaRecorder = new MediaRecorder(micStream, { mimeType: 'audio/webm' });
 
 			mediaRecorder.start();
 			console.log("recorder started", mediaRecorder.state);

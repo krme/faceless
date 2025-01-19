@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID
 
 from fastapi import APIRouter, FastAPI, HTTPException
@@ -7,31 +8,38 @@ from tasks.compare import preprocess_recording, extract_features
 
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 class ProcessReferenceRecordingsRequest(BaseModel):
     rid: UUID
 
 
-@router.post("/processReferenceRecordings")
+@router.post("/jobs/processReferenceRecordings")
 async def process_reference_recordings(request: ProcessReferenceRecordingsRequest):
     """
-    To process the recordings the user recorded on the website
+    Process the reference recordings the user recorded on the website
     """
+    logger.info("______ Hallo ______")
     try:
         dbConfig = load_db_config()
-        recordings = get_user(dbConfig, request.rid)
+        recordings = await get_user(dbConfig, request.rid)
 
         preprocessed_recordings = []
         for recording in recordings:
             preprocessed_recordings.append(preprocess_recording(recording))
 
+        logger.info(preprocessed_recordings)
+
         mfccs = []
         for recording in preprocessed_recordings:
             mfccs.append(extract_features(recording))
+
+        logger.info(mfccs)
         
-        update_user(dbConfig, request.rid, preprocessed_recordings, mfccs)
+        await update_user(dbConfig, request.rid, mfccs)
     except Exception as e:
+        logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -39,7 +47,7 @@ class IdentifyRequest(BaseModel):
     rid: UUID
 
 
-@router.post("/identify")
+@router.post("/jobs/identify")
 async def identify(request: IdentifyRequest):
     """
     To identify the user at login

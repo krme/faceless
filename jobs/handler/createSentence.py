@@ -5,7 +5,7 @@ from mistralai import Mistral
 router = APIRouter()
 
 
-@router.post("/createSentence")
+@router.post("/jobs/createSentence")
 def createSentence() -> str:
     api_key = "rNQf5SkjXzuEbKHMjRGdsmgWlBLODXhz"
     model = "mistral-small-latest"

@@ -1,7 +1,7 @@
 import numpy as np
 import librosa
 
-def extract_features(y, sr): 
+def extract_features(y, sr):
     # Load the audio file 
     # y, sr = librosa.load(file_path, sr=None) 
      

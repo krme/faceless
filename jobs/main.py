@@ -1,11 +1,16 @@
 import os
 import logging
+from dotenv import load_dotenv
 
 import uvicorn
 from fastapi import FastAPI, Request
 
 import handler.compareAudio as compareAudio
 import handler.createSentence as createSentence
+
+
+load_dotenv()
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -22,8 +27,6 @@ async def health():
 @app.middleware("https")
 async def log_requests(request: Request, call_next):
     response = await call_next(request)
-    if request.url == 'http://localhost:3000/':
-        return response
     logger.info(f"Received {request.method} request to {request.url}")
     logger.info(f"Returning {response.status_code} response")
     return response
