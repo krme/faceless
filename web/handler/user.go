@@ -58,8 +58,19 @@ func (r *UserView) HandleOnboardingSuccess(c echo.Context) error {
 	return render(c, screens.OnboardingSuccess())
 }
 
-func (r *UserView) Test(c echo.Context) error {
-	return render(c, screens.Test())
+func (r *UserView) Identify(c echo.Context) error {
+	bytes, err := helper.StartJob(fmt.Sprintf("http://localhost:%v/jobs/createSentence", r.server.JobsPort), map[string]string{})
+	if err != nil {
+		return err
+	}
+
+	sentence := ""
+	err = json.Unmarshal(bytes, &sentence)
+	if err != nil {
+		return err
+	}
+
+	return render(c, screens.Identify(sentence))
 }
 
 func (r *UserView) HandleShowResultPage(c echo.Context) error {

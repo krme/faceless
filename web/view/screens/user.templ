@@ -126,21 +126,15 @@ templ WaitForAuthentication() {
 	}
 }
 
-templ Test() {
-	@layout.Index("Test") {
-		<div
-			class="grow flex flex-col self-stretch bg-[#F0F5EE] justify-center items-center px-12"
-			_="init 
-			set $step to 1
-			put 'Record yourself saying the following sentence ' + $step + '/3' into #stepHeader
-			add @disabled to #nextButton"
-		>
-			<h1 class="text-5xl py-10 text-center">Voice authentication</h1>
+templ Identify(sentence string) {
+	@layout.Index("Identify") {
+		<div class="grow flex flex-col self-stretch bg-[#F0F5EE] justify-center items-center px-12">
+			<h1 class="text-5xl py-10 text-center">Voice identification</h1>
 			<div class="w-full flex-row lg:flex lg:items-center lg:justify-between mb-2">
 				<div class="min-w-0 flex-1">
 					<div class="flex flex-col items-center justify-center">
 						<h1 id="stepHeader" class="text-center"></h1>
-						<span class="text-gray-600 text-center">Hello from the other side</span>
+						<span class="text-gray-600 text-center">{ sentence }</span>
 						<!-- TODO: add recording feature -->
 						<!-- TODO: Add logic for sending requests to server - where are the endpoints? -->
 						<!-- TODO: stop recording after 10s automatically-->
@@ -216,28 +210,10 @@ templ Test() {
 							class="w-56 button_primary text-white font-bold p-2 my-2 rounded-lg cursor-pointer"
 							id="nextButton"
 							type="submit"
-							value="Next Recording"
+							value="Identify"
+							disabled
 							_="on click
-							if $step is 3
-								go to url http://localhost:2323/user/waitforauthentication
-							else
-								set $step to $step + 1
-								put 'Record yourself saying the following sentence ' + $step + '/3' into #stepHeader
-								set $isRecording to false
-								remove .bg-green-600 from #nextButton
-								remove @disabled from #nextButton
-								remove @disabled from #recordButton
-								add .bg-red-600 to #recordButton
-								add .hover:bg-red-500 to #recordButton
-								put 'Mic' into .material-icons in #recordButton
-								remove .text-white from #recordButton
-								add .hidden to #restartButton1
-								add @disabled to me
-								add .hidden to #sparkle
-								remove .w-full from #progressBarFill
-								add .w-0 to #progressBarFill
-							if $step is 3
-								put 'Evaluate' into @value of me"
+								go to url http://localhost:2323/user/waitforauthentication"
 						/>
 						<p class="text-indigo-500 hidden" id="sparkle">✨ Successfully recorded!</p>
 					</div>
@@ -362,7 +338,7 @@ templ OnboardingSuccess() {
 				</div>
 				<div class="h-9 flex-col justify-center items-center gap-6 flex w-full place-self-center">
 					<div class=" h-9 flex-col justify-center items-center gap-2 flex w-56 place-self-center">
-						<a class="self-stretch h-9 px-4 py-2  rounded-md shadow-sm justify-center items-center gap-1 inline-flex button_primary cursor-pointer place-self-center" href="/user/Test">
+						<a class="self-stretch h-9 px-4 py-2  rounded-md shadow-sm justify-center items-center gap-1 inline-flex button_primary cursor-pointer place-self-center" href="/user/identify">
 							<div class="text-[#F9F9F9] font-bold">Go to</div>
 							// <img class="w-[21px] h-[21px] rounded-[3px] border border-black/20" src="https://via.placeholder.com/21x21"/>
 						</a>
@@ -516,7 +492,11 @@ templ RecordSentence(sentence string) {
 						type="submit"
 						value="Next Recording"
 						disabled
-						_="on click
+						_="init
+							if getCurrentStep() is '3'
+								put 'Evaluate' into @value of me
+							end
+						on click
 							navigateToNextStep()"
 					/>
 					<p class="text-indigo-500 hidden" id="sparkle">✨ Successfully recorded!</p>
@@ -606,7 +586,11 @@ templ RecordSentence(sentence string) {
 		function navigateToNextStep() {
 			var step = getCurrentStep();
 			var nextStep = parseInt(step) + 1;
-			window.location.replace('/user/onboardingRecording/' + nextStep);
+			if (nextStep <= 3) {
+					window.location.replace('/user/onboardingRecording/' + nextStep);
+			} else {
+					window.location.replace('/user/onboardingSuccess');
+			}
 		}
 	</script>
 }
