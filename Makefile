@@ -5,6 +5,7 @@ MAKEFLAGS += -j2
 run: server tailwind
 
 install:
+# @cd jobs && pip install -r requirements.txt
 	@go install github.com/a-h/templ/cmd/templ@latest
 	@go install github.com/bokwoon95/wgo@latest
 	@npm install -D tailwindcss
@@ -31,12 +32,12 @@ clean:
 server:
 	@wgo -file .go -file .templ -xfile _templ.go clear :: templ generate :: go run . -name ht-2025-ai
 
+job:
+	@python3 jobs/main.py
+
 # Run tailwind watcher
 tailwind:
 	@npx tailwindcss -i ./web/static/styles/index.css -o ./web/static/styles/output.css --watch
-
-python:
-	@python3 jobs/main.py
 
 # Create DB container
 docker-run:
