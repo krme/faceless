@@ -38,12 +38,6 @@ def load_db_config() -> DBConfig:
 
 
 async def init_db(config: DBConfig) -> asyncpg.Pool:
-    # TODO check if necesary
-    # ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-
-    # ssl_context.check_hostname = False  # Do not verify hostname
-    # ssl_context.verify_mode = ssl.CERT_NONE  # Do not verify certificates
-
     try:
         conn = await asyncpg.connect(
             user=config.user,
@@ -51,7 +45,6 @@ async def init_db(config: DBConfig) -> asyncpg.Pool:
             database=config.database,
             host=config.host,
             port=config.port,
-            # ssl=ssl_context
         )
 
         if not conn:
@@ -124,14 +117,14 @@ async def get_latest_identification_attempt(db_config: DBConfig, rid: UUID):
         recording = convert_blob_to_librosa(attempt.recording)
 
     except Exception as e:
-        raise Exception(f"Error while getting user data: {str(e)}")
+        raise Exception(f"Error while getting latest_identification data: {str(e)}")
     finally:
         if conn:
             await close_db(conn)
     return recording
 
 
-async def update_user(db_config: DBConfig, rid: UUID, recordings_normalised, mfcc: List[float]):
+async def update_user(db_config: DBConfig, rid: UUID, mfcc: List[float]):
     conn = None
     try:
         conn = await init_db(db_config)
@@ -178,7 +171,7 @@ async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, i
         await conn.executemany(insert_query, mfcc, identified, rid)
 
     except Exception as e:
-        raise Exception(f"Error while updating user data: {str(e)}")
+        raise Exception(f"Error while updating latest_identification data: {str(e)}")
     finally:
         if conn:
             await close_db(conn)
@@ -204,7 +197,7 @@ async def get_vector_dist(db_config: DBConfig, rid: UUID, recording_mfcc: List[f
         query_result = await conn.fetch(query, rid, recording_mfcc)
 
     except Exception as e:
-        raise Exception(f"Error while getting chunks by vector: {str(e)}")
+        raise Exception(f"Error while getting dist of vector: {str(e)}")
     finally:
         if conn:
             await close_db(conn)

@@ -6,8 +6,10 @@ import (
 	"ht/helper"
 	"ht/server"
 	"ht/web/handler"
+	"net/http"
 	"time"
 
+	"github.com/gorilla/csrf"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -63,8 +65,8 @@ func (r *Router) RegisterRoutes() {
 		rate.Limit(20),
 	)))
 	// TODO remove csrf.Secure(false) in production
-	// csrfMiddleware := csrf.Protect(m.csrfKey, csrf.Path("/"), csrf.Secure(false), csrf.ErrorHandler(http.HandlerFunc(handler.HandleCSRFErrorView)))
-	// r.echo.Use(echo.WrapMiddleware(csrfMiddleware))
+	csrfMiddleware := csrf.Protect(m.csrfKey, csrf.Path("/"), csrf.Secure(false), csrf.ErrorHandler(http.HandlerFunc(handler.HandleCSRFErrorView)))
+	r.echo.Use(echo.WrapMiddleware(csrfMiddleware))
 	r.echo.Use(middleware.Recover())
 	// r.echo.Use(m.ThrottleMiddleware)
 	// r.echo.Use(middleware.Logger())
