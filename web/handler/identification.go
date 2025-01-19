@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"ht/helper"
+	"ht/model"
 	"ht/server"
 	"ht/web/view/screens"
 	"log"
@@ -49,10 +50,21 @@ func (r *IdentificationView) HandleAuthenticationWaiting(c echo.Context) error {
 }
 
 func (r *IdentificationView) HandleResult(c echo.Context) error {
-	identificationAttempt, err := r.server.IdentificationService.GetLatestIdentificationAttempt(c)
+	identificationAttempt := &model.IdentificationAttempt{}
+	var err error
+	for identificationAttempt.Used {
+		identificationAttempt, err = r.server.IdentificationService.GetLatestIdentificationAttempt(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
+		}
+	}
+
+	identificationAttempt, err = r.server.IdentificationService.UpdateIdentificationAttemptUsed(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
+
+	log.Printf("identificationAttempt: %v, %v", identificationAttempt.ID, identificationAttempt.Identified)
 
 	return render(c, screens.Result(identificationAttempt.Identified))
 }

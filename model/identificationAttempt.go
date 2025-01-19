@@ -12,6 +12,7 @@ type IdentificationAttempt struct {
 	UserRID    uuid.UUID `json:"user_rid"`
 	Recording  []byte    `json:"recording"`
 	Identified bool      `json:"identified"`
+	Used       bool      `json:"used"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }

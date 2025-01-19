@@ -86,6 +86,23 @@ func (r *IdentificationAttemptService) CreateIdentificationAttempt(c echo.Contex
 	return data, nil
 }
 
+func (r *IdentificationAttemptService) UpdateIdentificationAttemptUsed(c echo.Context) (*model.IdentificationAttempt, error) {
+	userId := helper.GetCurrentUserRID(c.Request().Context())
+	identificationAttempt, err := r.identificationAttemptDb.SelectLatestIdentificationAttemptByUserRID(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	identificationAttempt.Used = true
+
+	identificationAttempt, err = r.identificationAttemptDb.UpdateIdentificationAttempt(identificationAttempt)
+	if err != nil {
+		return nil, err
+	}
+
+	return identificationAttempt, nil
+}
+
 func (r *IdentificationAttemptService) GetLatestIdentificationAttempt(c echo.Context) (*model.IdentificationAttempt, error) {
 	userId := helper.GetCurrentUserRID(c.Request().Context())
 	identificationAttempt, err := r.identificationAttemptDb.SelectLatestIdentificationAttemptByUserRID(userId)

@@ -147,8 +147,6 @@ templ Identification(sentence string) {
 						console.log("Microphone stream stopped");
 					}
 
-					var step = getCurrentStep();
-
 					const csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
 					response = await fetch(`/identification/createIdentificationAttempt`, {
 							method: 'POST',
@@ -228,7 +226,7 @@ templ WaitForAuthentication() {
 		<div
 			class="grow shrink basis-0 self-stretch py-10 bg-[#F0F5EE] flex-col justify-center items-center inline-flex"
 			_="init
-				wait 5s then go to url http://localhost:2323/identification/result"
+				wait 10s then go to url http://localhost:2323/identification/result"
 		>
 			<div class="flex-col justify-start items-center gap-4 flex">
 				<div class="py-2 flex-col justify-center items-center gap-1 flex">

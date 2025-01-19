@@ -46,7 +46,8 @@ func (r IdentificationAttemptDBHandler) CreateTable() error {
 			user_rid UUID NOT NULL,
 			recording BYTEA,
 			recording_mfcc VECTOR(40),
-			identified BOOLEAN,
+			identified BOOLEAN DEFAULT FALSE,
+			used BOOLEAN DEFAULT FALSE,
 			created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 		);`,
@@ -90,6 +91,7 @@ func (r IdentificationAttemptDBHandler) InsertIdentificationAttempt(identificati
 			user_rid,
 			recording,
 			identified,
+			used,
 			created_at,
 			updated_at;`,
 		identificationAttempt.UserRID,
@@ -123,19 +125,22 @@ func (r IdentificationAttemptDBHandler) UpdateIdentificationAttempt(identificati
 		SET
 			recording = $1,
             identified = $2,
+			used = $3,
 			updated_at = CURRENT_TIMESTAMP
 		WHERE
-			rid = $2
+			rid = $4
 		RETURNING
 			id,
 			rid,
 			user_rid,
 			recording,
 			identified,
+			used,
 			created_at,
 			updated_at;`,
 		identificationAttempt.Recording,
 		identificationAttempt.Identified,
+		identificationAttempt.Used,
 		identificationAttempt.RID,
 	)
 
@@ -145,6 +150,7 @@ func (r IdentificationAttemptDBHandler) UpdateIdentificationAttempt(identificati
 		&identificationAttemptUpdated.UserRID,
 		&identificationAttemptUpdated.Recording,
 		&identificationAttemptUpdated.Identified,
+		&identificationAttemptUpdated.Used,
 		&identificationAttemptUpdated.CreatedAt,
 		&identificationAttemptUpdated.UpdatedAt,
 	)
@@ -178,6 +184,7 @@ func (r IdentificationAttemptDBHandler) SelectIdentificationAttempt(rid uuid.UUI
 			user_rid,
 			recording,
 			identified,
+			used,
 			created_at,
 			updated_at
 		FROM
@@ -192,6 +199,7 @@ func (r IdentificationAttemptDBHandler) SelectIdentificationAttempt(rid uuid.UUI
 		&identificationAttempt.UserRID,
 		&identificationAttempt.Recording,
 		&identificationAttempt.Identified,
+		&identificationAttempt.Used,
 		&identificationAttempt.CreatedAt,
 		&identificationAttempt.UpdatedAt,
 	)
@@ -212,6 +220,7 @@ func (r IdentificationAttemptDBHandler) SelectLatestIdentificationAttemptByUserR
 			user_rid,
 			recording,
 			identified,
+			used,
 			created_at,
 			updated_at
 		FROM
@@ -229,6 +238,7 @@ func (r IdentificationAttemptDBHandler) SelectLatestIdentificationAttemptByUserR
 		&identificationAttempt.UserRID,
 		&identificationAttempt.Recording,
 		&identificationAttempt.Identified,
+		&identificationAttempt.Used,
 		&identificationAttempt.CreatedAt,
 		&identificationAttempt.UpdatedAt,
 	)
@@ -249,6 +259,7 @@ func (r IdentificationAttemptDBHandler) SelectAllIdentificationAttempts(lastId i
 			user_rid,
 			recording,
 			identified,
+			used,
 			created_at,
 			updated_at
 		FROM
@@ -281,6 +292,7 @@ func (r IdentificationAttemptDBHandler) SelectAllIdentificationAttempts(lastId i
 			&identificationAttempt.UserRID,
 			&identificationAttempt.Recording,
 			&identificationAttempt.Identified,
+			&identificationAttempt.Used,
 			&identificationAttempt.CreatedAt,
 			&identificationAttempt.UpdatedAt,
 		)
@@ -306,6 +318,7 @@ func (r IdentificationAttemptDBHandler) SelectAllIdentificationAttemptsBySearch(
 			user_rid,
 			recording,
 			identified,
+			used,
 			created_at,
 			updated_at
 		FROM identification_attempt 
@@ -341,6 +354,7 @@ func (r IdentificationAttemptDBHandler) SelectAllIdentificationAttemptsBySearch(
 			&identificationAttempt.UserRID,
 			&identificationAttempt.Recording,
 			&identificationAttempt.Identified,
+			&identificationAttempt.Used,
 			&identificationAttempt.CreatedAt,
 			&identificationAttempt.UpdatedAt,
 		)
