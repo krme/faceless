@@ -35,7 +35,7 @@ async def init_db(config: DBConfig) -> asyncpg.Pool:
         )
 
         if not conn:
-            raise Exception("Failed to create database connection (NONE).")
+            raise Exception("No connection.")
 
         print("Database connection created successfully")
         return conn

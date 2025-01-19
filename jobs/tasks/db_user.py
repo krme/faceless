@@ -68,7 +68,6 @@ async def get_user(db_config: DBConfig, rid: UUID):
     finally:
         if conn:
             await close_db(conn)
-            print("Database connection closed successfully")
     return recordings
 
 

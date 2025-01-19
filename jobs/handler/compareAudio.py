@@ -23,7 +23,6 @@ async def process_reference_recordings(request: ProcessReferenceRecordingsReques
     """
     Process the reference recordings the user recorded on the website
     """
-    logger.info("______ Hallo ______")
     try:
         dbConfig = load_db_config()
         recordings = await get_user(dbConfig, request.rid)
@@ -32,14 +31,10 @@ async def process_reference_recordings(request: ProcessReferenceRecordingsReques
         for (recording, sr) in recordings:
             preprocessed_recordings.append(preprocess_recording(recording, sr))
 
-        logger.info(preprocessed_recordings)
-
         mfccs = []
         for (recording, sr) in preprocessed_recordings:
             mfccs.append(extract_features(recording, sr))
 
-        logger.info("mfccs")
-        
         await update_user(dbConfig, request.rid, mfccs)
     except Exception as e:
         logger.error(str(e))
@@ -68,11 +63,10 @@ async def identify(request: IdentifyRequest):
 
         dist = await get_vector_dist(dbConfig, request.user_rid, mfcc)
 
-        logger.info(f"distance of identification: {dist}")
-
         # TODO adjust threshold
+        logger.info(f"distance of identification: {dist}")
         identified = False
-        if dist < 50:
+        if dist < 2:
             identified = True
 
         await update_latest_identification_attempt(dbConfig, attempt.rid, identified, mfcc)

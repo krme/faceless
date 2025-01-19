@@ -55,7 +55,6 @@ async def get_latest_identification_attempt(db_config: DBConfig, user_rid: UUID)
 
         attempt = Attempt.from_json_map(query_result[0])
     except Exception as e:
-        print(f"Error while getting latest_identification data: {str(e)}")
         raise Exception(f"Error while getting latest_identification data: {str(e)}")
     finally:
         if conn:
