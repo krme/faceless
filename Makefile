@@ -29,11 +29,14 @@ clean:
 # server: clean
 #	templ generate --watch --cmd 'wgo run . -name ht-2025-ai'
 server:
-	wgo -file .go -file .templ -xfile _templ.go clear :: templ generate :: go run . -name ht-2025-ai
+	@wgo -file .go -file .templ -xfile _templ.go clear :: templ generate :: go run . -name ht-2025-ai
 
 # Run tailwind watcher
 tailwind:
 	@npx tailwindcss -i ./web/static/styles/index.css -o ./web/static/styles/output.css --watch
+
+python:
+	@python3 jobs/main.py
 
 # Create DB container
 docker-run:

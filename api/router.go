@@ -46,7 +46,7 @@ func StartServer() {
 	echo.HTTPErrorHandler = handler.HandleErrorView
 	echo.Logger.SetLevel(log.DEBUG)
 	echo.Logger.Fatal(
-		echo.Start(fmt.Sprintf(":%v", helper.GetEnvVariable("PORT"))),
+		echo.Start(fmt.Sprintf(":%v", helper.GetEnvVariable("SERVER_PORT"))),
 	)
 
 	<-ctx.Done()
@@ -92,7 +92,7 @@ func (r *Router) RegisterRoutes() {
 	r.echo.GET("/user", m.ViewAuthMiddleware(userView.HandleUser))
 
 	r.echo.GET("/user/onboardingStart", m.ViewAuthMiddleware(userView.HandleOnboardingStart))
-	r.echo.GET("/user/onboardingRecording", m.ViewAuthMiddleware(userView.HandleOnboardingRecording))
+	r.echo.GET("/user/onboardingRecording/:step", m.ViewAuthMiddleware(userView.HandleOnboardingRecording))
 	r.echo.GET("/user/onboardingSuccess", m.ViewAuthMiddleware(userView.HandleOnboardingSuccess))
 	r.echo.GET("/user/Test", m.ViewAuthMiddleware(userView.Test))
 	r.echo.GET("/user/waitforauthentication", m.ViewAuthMiddleware(userView.HandleAuthenticationWaiting))
@@ -100,7 +100,7 @@ func (r *Router) RegisterRoutes() {
 	r.echo.GET("/user/showResult", m.ViewAuthMiddleware(userView.HandleShowResult))
 
 	// api
-	r.echo.POST("/user/createRefernceRecording/:step", userView.HandleCreateReferenceRecording)
+	r.echo.POST("/user/createReferenceRecording/:step", userView.HandleCreateReferenceRecording)
 
 	r.echo.RouteNotFound("/*", handler.HandleNotFound)
 
