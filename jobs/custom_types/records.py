@@ -10,9 +10,9 @@ class User(BaseModel):
     """
     id: int = 0
     rid: UUID = UUID(int=0)
-    recording_1 = []
-    recording_2 = []
-    recording_3 = []
+    recording_1: bytes = []
+    recording_2: bytes = []
+    recording_3: bytes = []
 
 
     def from_json_map(json: Dict[str, any]):

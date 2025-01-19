@@ -1,6 +1,11 @@
-
+from fastapi import APIRouter, FastAPI
 from mistralai import Mistral
 
+
+router = APIRouter()
+
+
+@router.post("/createSentence")
 def createSentence() -> str:
     api_key = "rNQf5SkjXzuEbKHMjRGdsmgWlBLODXhz"
     model = "mistral-small-latest"
@@ -22,9 +27,5 @@ def createSentence() -> str:
     return chat_response.choices[0].message.content
 
 
-def main():
-    createSentence()
-
-
-if __name__ == "__main__":
-    main()
+app = FastAPI()
+app.include_router(router)

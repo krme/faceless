@@ -31,6 +31,6 @@ async def log_requests(request: Request, call_next):
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 3000))
+    port = int(os.environ.get("JOBS_PORT", 3000))
     print('Server is running')
     uvicorn.run(app, host="0.0.0.0", port=port)

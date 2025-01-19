@@ -72,7 +72,6 @@ async def get_user(db_config: DBConfig, rid: UUID):
     conn = None
     recordings = []
     try:
-        
         conn = await init_db(db_config)
 
         query = """
@@ -161,7 +160,6 @@ async def update_user(db_config: DBConfig, rid: UUID, recordings_normalised, mfc
 async def update_latest_identification_attempt(db_config: DBConfig, rid: UUID, identified: bool, mfcc: List[float]):
     conn = None
     try:
-        
         conn = await init_db(db_config)
 
         # SQL-Query zur Einfügung der Embeddings in die Datenbank

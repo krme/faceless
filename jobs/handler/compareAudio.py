@@ -1,22 +1,26 @@
 from uuid import UUID
 
 from fastapi import APIRouter, FastAPI, HTTPException
-from jobs.tasks.db_functions import DBConfig, get_user, init_db, load_db_config, update_user, close_db, get_latest_identification_attempt, get_vector_dist, update_latest_identification_attempt
-from jobs.tasks.compare import preprocess_recording, extract_features
-import datetime
-# from sklearn.metrics import pairwise
+from pydantic import BaseModel
+from tasks.db_functions import get_user, load_db_config, update_user, get_latest_identification_attempt, get_vector_dist, update_latest_identification_attempt
+from tasks.compare import preprocess_recording, extract_features
+
 
 router = APIRouter()
 
-    
-@router.post("/ProcessReferenceRecordings")
-async def process_reference_recordings(rid: UUID):
+
+class ProcessReferenceRecordingsRequest(BaseModel):
+    rid: UUID
+
+
+@router.post("/processReferenceRecordings")
+async def process_reference_recordings(request: ProcessReferenceRecordingsRequest):
     """
     To process the recordings the user recorded on the website
     """
     try:
         dbConfig = load_db_config()
-        recordings = get_user(dbConfig, rid)
+        recordings = get_user(dbConfig, request.rid)
 
         preprocessed_recordings = []
         for recording in recordings:
@@ -26,19 +30,23 @@ async def process_reference_recordings(rid: UUID):
         for recording in preprocessed_recordings:
             mfccs.append(extract_features(recording))
         
-        update_user(dbConfig, rid, preprocessed_recordings, mfccs)
+        update_user(dbConfig, request.rid, preprocessed_recordings, mfccs)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    
+
+class IdentifyRequest(BaseModel):
+    rid: UUID
+
+
 @router.post("/identify")
-async def identify(rid: UUID):
+async def identify(request: IdentifyRequest):
     """
     To identify the user at login
     """
     try:
         dbConfig = load_db_config()
-        recording = get_latest_identification_attempt(dbConfig, rid)
+        recording = get_latest_identification_attempt(dbConfig, request.rid)
 
         preprocessed_recording = preprocess_recording(recording)
 
@@ -47,12 +55,11 @@ async def identify(rid: UUID):
         dist = get_vector_dist(mfcc)
 
         # adjust threshold
+        identified = False
         if dist < 50:
             identified = True
-        else:
-            identified = False
-        
-        update_latest_identification_attempt(dbConfig, rid, preprocessed_recording, mfcc)
+
+        update_latest_identification_attempt(dbConfig, request.rid, identified, mfcc)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
