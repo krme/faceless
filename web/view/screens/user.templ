@@ -328,6 +328,7 @@ templ RecordSentence(sentence string) {
 			border-top-width: 5px; /* Thicker border */
 		}
 	</style>
+	@components.CSRF()
 	<script>
 		var mediaRecorder;
 
@@ -373,8 +374,12 @@ templ RecordSentence(sentence string) {
 						step = splitUrl.pop();
 				}
 
+				const csrfToken = document.getElementsByName("gorilla.csrf.Token")[0].value;
 				response = await fetch(`/user/createReferenceRecording/${step}`, {
 						method: 'POST',
+						headers: {
+							'X-CSRF-Token': csrfToken,
+						},
 						body: formData,
 				});
 				if (response.ok) {
