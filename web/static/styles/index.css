@@ -207,7 +207,7 @@
     .button_primary {
         @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm bg-indigo-500 text-white hover:bg-indigo-800 disabled:bg-gray-300 disabled:text-gray-500 disabled:dark:bg-gray-500 disabled:dark:text-gray-300
     }
-.button_primary_inverse {
+    .button_primary_inverse {
         @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm bg-white text-indigo-700 hover:bg-indigo-200 disabled:bg-gray-300 disabled:text-gray-500 disabled:dark:bg-gray-500 disabled:dark:text-gray-300
     }
     .button_red {

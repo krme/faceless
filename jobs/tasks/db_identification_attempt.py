@@ -42,7 +42,8 @@ async def get_latest_identification_attempt(db_config: DBConfig, user_rid: UUID)
                 id,
                 rid,
                 user_rid,
-                recording
+                recording,
+                identified
             FROM identification_attempt
             WHERE user_rid = $1
             ORDER BY created_at DESC

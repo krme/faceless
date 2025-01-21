@@ -104,14 +104,13 @@ func (r IdentificationAttemptDBHandler) InsertIdentificationAttempt(identificati
 		&newIdentificationAttempt.UserRID,
 		&newIdentificationAttempt.Recording,
 		&newIdentificationAttempt.Identified,
+		&newIdentificationAttempt.Used,
 		&newIdentificationAttempt.CreatedAt,
 		&newIdentificationAttempt.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
-
-	log.Printf("inserted identificationAttempt: %v", newIdentificationAttempt)
 
 	return newIdentificationAttempt, nil
 }

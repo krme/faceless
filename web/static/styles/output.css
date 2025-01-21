@@ -3375,11 +3375,6 @@ input {
   background-color: rgb(239 68 68 / var(--tw-bg-opacity, 1)) !important;
 }
 
-.bg-red-600 {
-  --tw-bg-opacity: 1 !important;
-  background-color: rgb(220 38 38 / var(--tw-bg-opacity, 1)) !important;
-}
-
 .bg-transparent {
   background-color: transparent !important;
 }
@@ -4953,6 +4948,11 @@ input {
 .hover\:bg-gray-200:hover {
   --tw-bg-opacity: 1 !important;
   background-color: rgb(229 231 235 / var(--tw-bg-opacity, 1)) !important;
+}
+
+.hover\:bg-indigo-400:hover {
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(129 140 248 / var(--tw-bg-opacity, 1)) !important;
 }
 
 .hover\:bg-indigo-500:hover {

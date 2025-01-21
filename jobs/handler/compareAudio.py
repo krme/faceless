@@ -66,10 +66,13 @@ async def identify(request: IdentifyRequest):
         # TODO adjust threshold
         logger.info(f"distance of identification: {dist}")
         identified = False
-        if dist < 2:
+        if dist < 5:
             identified = True
 
         await update_latest_identification_attempt(dbConfig, attempt.rid, identified, mfcc)
+
+        attempt = await get_latest_identification_attempt(dbConfig, request.user_rid)
+        print(attempt.toString())
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))

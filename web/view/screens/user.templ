@@ -159,10 +159,9 @@ templ RecordSentence(sentence string) {
 									toggle @disabled on #nextButton
 									set $isRecording to false
 									remove .bg-green-600 from next <button/>
-									add .bg-red-600 to next <button/>
-									add .hover:bg-red-500 to next <button/>
+									add .bg-indigo-500 to next <button/>
+									add .hover:bg-indigo-400 to next <button/>
 									put 'Mic' into .material-icons in next <button/>
-									remove .text-white from next <button/>
 									remove @disabled from #recordButton
 									add .hidden to #sparkle
 									add .hidden to me
@@ -175,7 +174,7 @@ templ RecordSentence(sentence string) {
 							<button
 								id="recordButton"
 								type="button"
-								class="inline-flex items-center p-2 rounded-full bg-red-600 hover:bg-red-500"
+								class="inline-flex items-center p-2 rounded-full bg-indigo-500 hover:bg-indigo-400"
 								_="init
 									set $isRecording to false
 								  on click 
@@ -183,8 +182,8 @@ templ RecordSentence(sentence string) {
 										startRecording()
 										set $isRecording to true
 										remove .bg-green-600 from me
-										add .bg-red-600 to me
-										add .hover:bg-red-500 to me
+										add .bg-indigo-500 to me
+										add .hover:bg-indigo-400 to me
 										put 'stop' into .material-icons in me
 										remove .hidden from previous <button/>
 										add .inline-flex to previous <button/>
@@ -194,18 +193,17 @@ templ RecordSentence(sentence string) {
 									else
 										stopRecording()
 										set $isRecording to false
-										remove .bg-red-600 from me
-										remove .hover:bg-red-500 from me
+										remove .bg-indigo-500 from me
+										remove .hover:bg-indigo-400 from me
 										remove @disabled from #nextButton
 										add .bg-green-600 to me
 										toggle @disabled on me
 										put 'check' into .material-icons in me
-										add .text-white to me
 										remove .hidden from #sparkle
 										add .transition-none to #progressBarFill
 									end"
 							>
-								<span class="material-icons text-xxl">mic</span>
+								<span class="material-icons text-xxl text-white">mic</span>
 							</button>
 						</div>
 						<div class="relative h-[3px] w-full overflow-visible">
