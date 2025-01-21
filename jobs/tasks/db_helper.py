@@ -14,13 +14,23 @@ class DBConfig(BaseModel):
     port: str
 
 
-def load_db_config() -> DBConfig:
+def load_user_db_config() -> DBConfig:
     return DBConfig(
-        user=os.environ.get("PG_USERNAME"),
-        password=os.environ.get("PG_PASSWORD"),
-        database=os.environ.get("PG_DATABASE"),
-        host=os.environ.get("PG_HOST"),
-        port=os.environ.get("PG_PORT", '5432') 
+        user=os.environ.get("DB_USER_USERNAME"),
+        password=os.environ.get("DB_USER_PASSWORD"),
+        database=os.environ.get("DB_USER_DATABASE"),
+        host=os.environ.get("DB_USER_HOST"),
+        port=os.environ.get("DB_USER_PORT", '5432') 
+    )
+
+
+def load_identification_db_config() -> DBConfig:
+    return DBConfig(
+        user=os.environ.get("DB_IDENTIFICATION_USERNAME"),
+        password=os.environ.get("DB_IDENTIFICATION_PASSWORD"),
+        database=os.environ.get("DB_IDENTIFICATION_DATABASE"),
+        host=os.environ.get("DB_IDENTIFICATION_HOST"),
+        port=os.environ.get("DB_IDENTIFICATION_PORT", '5432') 
     )
 
 

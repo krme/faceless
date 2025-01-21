@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, FastAPI, HTTPException
 from pydantic import BaseModel
-from tasks.db_helper import load_db_config
+from tasks.db_helper import load_user_db_config, load_identification_db_config
 from tasks.db_identification_attempt import get_latest_identification_attempt, update_latest_identification_attempt
 from tasks.db_user import get_user, update_user, get_vector_dist
 
@@ -24,8 +24,9 @@ async def process_reference_recordings(request: ProcessReferenceRecordingsReques
     Process the reference recordings the user recorded on the website
     """
     try:
-        dbConfig = load_db_config()
-        recordings = await get_user(dbConfig, request.rid)
+        dbConfigUser = load_user_db_config()
+
+        recordings = await get_user(dbConfigUser, request.rid)
 
         preprocessed_recordings = []
         for (recording, sr) in recordings:
@@ -35,7 +36,7 @@ async def process_reference_recordings(request: ProcessReferenceRecordingsReques
         for (recording, sr) in preprocessed_recordings:
             mfccs.append(extract_features(recording, sr))
 
-        await update_user(dbConfig, request.rid, mfccs)
+        await update_user(dbConfigUser, request.rid, mfccs)
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))
@@ -51,9 +52,10 @@ async def identify(request: IdentifyRequest):
     To identify the user at login
     """
     try:
-        dbConfig = load_db_config()
+        dbConfigUser = load_user_db_config()
+        dbConfigIdentification = load_identification_db_config()
         
-        attempt = await get_latest_identification_attempt(dbConfig, request.user_rid)
+        attempt = await get_latest_identification_attempt(dbConfigIdentification, request.user_rid)
 
         recording, sr = convert_blob_to_librosa(attempt.recording)
 
@@ -61,7 +63,7 @@ async def identify(request: IdentifyRequest):
 
         mfcc = extract_features(preprocessed_recording, sr)
 
-        dist = await get_vector_dist(dbConfig, request.user_rid, mfcc)
+        dist = await get_vector_dist(dbConfigUser, request.user_rid, mfcc)
 
         # TODO adjust threshold
         logger.info(f"distance of identification: {dist}")
@@ -69,9 +71,9 @@ async def identify(request: IdentifyRequest):
         if dist < 5:
             identified = True
 
-        await update_latest_identification_attempt(dbConfig, attempt.rid, identified, mfcc)
+        await update_latest_identification_attempt(dbConfigIdentification, attempt.rid, identified, mfcc)
 
-        attempt = await get_latest_identification_attempt(dbConfig, request.user_rid)
+        attempt = await get_latest_identification_attempt(dbConfigIdentification, request.user_rid)
         print(attempt.toString())
     except Exception as e:
         logger.error(str(e))
