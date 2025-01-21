@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, FastAPI
 from mistralai import Mistral
 
@@ -7,7 +8,7 @@ router = APIRouter()
 
 @router.post("/jobs/createSentence")
 def createSentence() -> str:
-    api_key = "rNQf5SkjXzuEbKHMjRGdsmgWlBLODXhz"
+    api_key = os.environ.get("MISTRAL_KEY")
     model = "mistral-small-latest"
 
     client = Mistral(api_key=api_key)
