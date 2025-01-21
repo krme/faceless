@@ -9,7 +9,7 @@ router = APIRouter()
 @router.post("/jobs/createSentence")
 def createSentence() -> str:
     api_key = os.environ.get("MISTRAL_KEY")
-    model = "mistral-small-latest"
+    model = "pixtral-12b-2409"
 
     client = Mistral(api_key=api_key)
 
