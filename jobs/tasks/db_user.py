@@ -8,7 +8,7 @@ from tasks.compare import convert_blob_to_librosa
 from tasks.db_helper import DBConfig, close_db, init_db
 
 
-async def update_user(db_config: DBConfig, rid: UUID, mfcc: List[float]):
+async def update_user(db_config: DBConfig, rid: UUID, mfcc: List[np.ndarray]):
     conn = None
     try:
         conn = await init_db(db_config)
